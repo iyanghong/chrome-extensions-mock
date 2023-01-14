@@ -1,0 +1,43 @@
+{
+  "name": "Mock Data",
+  "version": "1.0",
+  "manifest_version": 3,
+  "description": "模拟数据",
+  "background": {
+    "service_worker": "js/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "html/index.html"
+  },
+  "permissions": [
+    "contextMenus",
+    "scripting",
+    "tabs",
+    "history",
+    "declarativeContent",
+    "activeTab",
+    "storage",
+    "notifications"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "js/vue.min.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "icons": {
+    "16": "img/favicon.png",
+    "48": "img/favicon.png",
+    "128": "img/favicon.png"
+  }
+}

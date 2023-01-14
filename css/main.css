@@ -1,0 +1,181 @@
+#app {
+    width: 200px;
+    display: flex;
+    flex-wrap: wrap;
+
+
+}
+
+#app > div {
+    width: 100%;
+}
+
+#app .flex-sb {
+    display: flex;
+    justify-content: space-between;
+}
+
+#app .btn-text {
+    display: inline-block;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    -webkit-appearance: none;
+    text-align: center;
+    box-sizing: border-box;
+    outline: none;
+    margin: 0;
+    transition: .1s;
+    font-weight: 500;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    font-size: 12px;
+    border-radius: 4px;
+    border-color: transparent;
+    color: #409eff;
+    background: transparent;
+    padding: 0;
+}
+
+#app .btn-text.btn-delete {
+    color: #f56c6c;
+}
+
+#app .mock-item {
+    width: 80px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    margin: 5px;
+    cursor: pointer;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+    /*box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;*/
+}
+
+#app #rule-list {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 12px 0;
+}
+
+#app #rule-list .rule-item, #app #rule-list .empty-item {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+}
+
+#app #rule-list .rule-item {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    margin-top: 6px;
+
+}
+
+#app #rule-list .rule-item > span {
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    white-space: nowrap;
+    background: #fff;
+    border: 1px solid #dcdfe6;
+    color: #606266;
+    -webkit-appearance: none;
+    box-sizing: border-box;
+    outline: none;
+    margin: 0;
+    transition: .1s;
+    font-weight: 500;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    font-size: 14px;
+    border-radius: 4px;
+}
+
+#app #rule-list .rule-item > span:hover {
+    color: #67c23a;
+}
+
+#app #rule-list .rule-item > div {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    width: 90px;
+}
+
+#app #rule-list .rule-item > div > button {
+    width: 40px;
+}
+
+#app #rule-list .empty-item {
+    width: 100%;
+    text-align: center;
+    color: #5e6d82
+}
+
+.mock-container-select-mock {
+    width: 80px;
+    display: flex;
+    flex-wrap: nowrap;
+    position: relative;
+    cursor: pointer;
+    text-align: center;
+}
+
+.mock-container-select-mock:hover .mock-container-select-mock-list {
+    display: block;
+}
+
+.mock-container-select-mock .mock-container-select-mock-list li > span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/*.mock-container-select-mock > span {
+    display: block;
+    position: absolute;
+}*/
+
+.mock-container-select-mock .mock-container-select-mock-list {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: none;
+}
+
+.mock-container-select-mock .mock-container-select-mock-list li {
+    list-style: none;
+    position: relative;
+    cursor: pointer;
+    width: 80px;
+    border: 1px solid #eee;
+    text-align: center;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+
+.mock-container-select-mock .mock-container-select-mock-list li:hover {
+    background-color: #DCDFE6;
+    transition: background-color .5s;
+    color: #409eff;
+}
+
+.mock-container-select-mock .mock-container-select-mock-list li:hover > .mock-children {
+    display: block;
+}
+
+.mock-container-select-mock .mock-container-select-mock-list .mock-children {
+    position: absolute;
+    width: 80px;
+    right: -80px;
+    top: 0;
+    display: none;
+}
