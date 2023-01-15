@@ -30,6 +30,9 @@ class Mock {
             document.querySelector('#btn-create').addEventListener('click', () => {
                 this.handleCreateRule()
             })
+            document.querySelector('#btn-option').addEventListener('click', () => {
+                chrome.runtime.openOptionsPage()
+            })
         });
     }
 
@@ -144,8 +147,12 @@ function newRuleForm(tab, rule) {
             }
             this.rule.title = currentTab.title
             this.render()
-            this.listenBodyClickEvent = listen(document.body, 'click', e => {
-                console.log(e)
+            /*window.addEventListener('blur',() => {
+                console.log(document.activeElement)
+            })*/
+            //mousedown
+            this.listenBodyClickEvent = listen(document.body, 'mousedown', e => {
+                // console.log(e)
                 this.resolveElement(e.target)
             })
 
@@ -276,9 +283,13 @@ function newRuleForm(tab, rule) {
             let tableContainer = createElement({
                 tagName: 'div',
             })
-            setTimeout(() => {
+            if (this.isLoaded) {
                 tableContainer.appendChild(this.renderItemList())
-            }, 50)
+            } else {
+                setTimeout(() => {
+                    tableContainer.appendChild(this.renderItemList())
+                }, 50)
+            }
 
             container.appendChild(tableContainer)
 
@@ -286,7 +297,7 @@ function newRuleForm(tab, rule) {
             container.appendChild(this.renderFooter())
 
             this.$el = container
-
+            this.isLoaded = true
             document.querySelector('body').appendChild(container)
         }
 
@@ -522,6 +533,15 @@ function newRuleForm(tab, rule) {
                     },
                     {
                         tagName: 'button',
+                        text: 'Mock',
+                        events: {
+                            click: () => {
+                                chrome.runtime.sendMessage('', {key: 'setMock', data: this.rule})
+                            }
+                        }
+                    },
+                    {
+                        tagName: 'button',
                         text: '保存',
                         events: {
                             click: () => {
@@ -529,7 +549,8 @@ function newRuleForm(tab, rule) {
 
                             }
                         }
-                    }
+                    },
+
                 ]
             })
 
@@ -569,17 +590,17 @@ function newRuleForm(tab, rule) {
                 ruleItem.appendChild(nameInputTd)
 
                 let mockKeyInputTd = document.createElement('td')
-                if (item.type === 'radio') {
+                let typeText = {
+                    radio: '单选框',
+                    checkbox: '多选框',
+                    switch: '开关',
+                    elSelect: '下拉框随机'
+                }
+                if (typeText[item.type]) {
                     mockKeyInputTd.appendChild(createElement({
                         tagName: 'span',
                         style: 'cursor:not-allowed ',
-                        text: '单选框随机'
-                    }))
-                } else if (item.type === 'checkbox') {
-                    mockKeyInputTd.appendChild(createElement({
-                        tagName: 'span',
-                        style: 'cursor:not-allowed ',
-                        text: '多选框随机'
+                        text: `${typeText[item.mockName]}随机`
                     }))
                 } else {
                     mockKeyInputTd.appendChild(this.getSelectElement(item.key, item.mockName || '请选择'))
@@ -693,7 +714,11 @@ function newRuleForm(tab, rule) {
             if (['INPUT', 'TEXTAREA'].indexOf(target.tagName) > -1) {
                 if (['checkbox', 'radio'].indexOf(target.getAttribute('type')) === -1) {
                     let realPath = this.getDomPath(target)
-                    this.pushRuleItem(target.tagName, realPath)
+                    let name = ''
+                    if (target.getAttribute('placeholder')) {
+                        name = target.getAttribute('placeholder').replace('请选择', '').replace('请输入', '').replace('Please enter', '').replace('please enter', '')
+                    }
+                    this.pushRuleItem(target.tagName, realPath, name)
                 }
             }
 
@@ -774,18 +799,114 @@ function newRuleForm(tab, rule) {
         }
 
         resolveElementUIElement(target) {
+            let type = 'input', name = ''
+            if (target.classList.contains('el-checkbox__label') || target.classList.contains('el-checkbox__inner')) {
+                target = target.parentNode.parentNode
+                if (target.classList.contains('el-checkbox')) target = target.parentNode
+                type = 'checkbox'
+            } else if (target.classList.contains('el-radio__label') || target.classList.contains('el-radio__inner')) {
+                target = target.parentNode.parentNode
+                if (target.classList.contains('el-radio')) target = target.parentNode
+                type = 'radio'
+            } else if (target.classList.contains('el-input__inner') && target.parentNode?.parentNode?.classList.contains('el-select')) {
+                name = this.resolveInputPlaceholder(target)
+                target = target.parentNode.parentNode
+                type = 'elSelect'
+            } else if (target.classList.contains('el-input__inner') || target.classList.contains('el-textarea__inner')) {
+                type = 'input'
+            } else if (target.classList.contains('el-switch__core')) {
+                type = 'switch'
+            } else {
+                return false
+            }
+            let realPath = this.getDomPath(target)
 
-            let elementUIInputTypeClass = ['el-input__inner', 'el-textarea__inner', 'el-radio__original', 'el-checkbox__original'],
+            switch (type) {
+                case 'checkbox':
+                    realPath += ` .el-checkbox__original`
+                    break
+                case 'radio':
+                    realPath += ` .el-radio__original`
+                    break
+                case 'elSelect':
+                    break
+                default:
+                    break
+            }
+            if (!name) name = this.resolveInputPlaceholder(target) || getFormItemLabel(target)
+
+            let typeText = {
+                radio: '单选框',
+                checkbox: '多选框',
+                switch: '开关',
+                elSelect: '下拉框随机'
+            }
+
+            this.pushRuleItem(target.tagName, realPath, name, type, typeText[type] || '')
+            this.render()
+
+            function getFormItemLabel(el, deep = 4) {
+                while (deep > 0) {
+                    if (el.classList.contains('el-form-item')) {
+                        return el.querySelector('.el-form-item__label')?.innerText
+                    }
+                    deep--
+                    el = el.parentNode
+                }
+                return ''
+            }
+
+
+            /*let elementUIInputTypeClass = ['el-input__inner', 'el-textarea__inner', 'el-radio__original', 'el-checkbox__original', 'el-switch__input', 'el-select','el-checkbox-group'],
                 parentNodeTypeClass = ['el-date-editor', 'el-input'],
                 inputTypeClassName = '',
                 parentNodeClassName = '',
                 type = 'input'
+            if (target.classList.contains('el-form-item__label') || target.classList.contains('el-switch__core')) {
+                if (target.parentNode.querySelector('.el-select')) {
+                    target = target.parentNode.querySelector('.el-select')
+                } else {
+                    target = target.parentNode.querySelector('input')
+                }
+
+            } else if (target.classList.contains('el-input__inner')) {
+                if (target.parentNode?.parentNode?.classList.contains('el-select')) {
+                    target = target.parentNode.parentNode
+                }
+            }else if(target.classList.contains('el-checkbox__label') || target.classList.contains('el-checkbox__inner')){
+                target = target.parentNode.parentNode
+                if(target.classList.contains('el-checkbox__inner')) target = target.parentNode
+            }
+
+
+            console.log('target', target)
             for (let value of elementUIInputTypeClass) {
                 if (target.classList.contains(value)) {
                     inputTypeClassName = value
                     break
                 }
             }
+            switch (inputTypeClassName) {
+                case 'el-radio__original':
+                    type = 'radio'
+                    break
+                case 'el-checkbox-group':
+                    type = 'checkbox'
+                    break
+                case 'el-checkbox__original':
+                    type = 'checkbox'
+                    break
+                case 'el-switch__input':
+                    type = 'switch'
+                    break
+                case 'el-select':
+                    type = 'elSelect'
+                    break
+                default:
+                    type = 'input'
+                    break
+            }*/
+            /*// let type = 'input'
             let parentNode = target.parentNode
 
             for (let value of parentNodeTypeClass) {
@@ -796,21 +917,25 @@ function newRuleForm(tab, rule) {
             }
 
             let label = parentNode
-            console.log(label)
+
+
             if (parentNode.classList.contains('el-date-editor')) {
                 label = label.parentNode?.parentNode?.parentNode?.querySelector('.el-form-item__label')
+            } else if (target.classList.contains('el-select')) {
+                label = label.parentNode?.querySelector('.el-form-item__label')
             } else if (parentNode.classList.contains('el-radio__input')) {
                 label = label.parentNode?.parentNode?.parentNode?.parentNode?.querySelector('.el-form-item__label')
-                type = 'radio'
             } else if (parentNode.classList.contains('el-checkbox__input')) {
                 label = label.parentNode?.parentNode?.parentNode?.parentNode?.querySelector('.el-form-item__label')
-                type = 'checkbox'
             } else {
                 label = label.parentNode?.parentNode?.querySelector('.el-form-item__label')
             }
-            console.log('item', label)
-            console.log('inputTypeClassName', inputTypeClassName)
+            console.log('resolveLabel', label)
+
+
             console.log('parentNodeClassName', parentNodeClassName)
+            console.log('inputTypeClassName', inputTypeClassName)
+
 
             if (label && (inputTypeClassName || parentNodeClassName)) {
                 let realPath = this.getDomPath(label)
@@ -820,7 +945,37 @@ function newRuleForm(tab, rule) {
                 return true
             }
 
-            return false
+            function getInputTypeClassName(inputEl) {
+                let elementUIInputTypeClass = ['el-input__inner', 'el-textarea__inner', 'el-radio__original', 'el-checkbox__original']
+                for (let value of elementUIInputTypeClass) {
+                    if (inputEl.classList.contains(value)) {
+                        return value
+                    }
+                }
+                return ''
+            }
+
+            function getParentNodeClassName(el) {
+                let parentNodeTypeClass = ['el-date-editor', 'el-input'];
+                for (let value of parentNodeTypeClass) {
+                    if (el.classList.contains(value)) {
+                        return `.${value}`
+                    }
+                }
+                return ''
+            }*/
+
+            return true
+        }
+
+        resolveInputPlaceholder(el) {
+            if (!el.getAttribute('placeholder')) return ''
+            let placeholder = el.getAttribute('placeholder')
+            let replaceText = ['请输入', '请选择', 'please enter', 'please select', 'Please select', 'Please enter']
+            for (let value of replaceText) {
+                placeholder = placeholder.replace(value, '')
+            }
+            return placeholder
         }
 
         /**
@@ -845,15 +1000,17 @@ function newRuleForm(tab, rule) {
          * @param realPath
          * @param name
          * @param type
+         * @param mockName
          */
-        pushRuleItem(tagName, realPath, name = '', type = 'input') {
+        pushRuleItem(tagName, realPath, name = '', type = 'input', mockName = '') {
             if (!this.rule.items.some(item => item.key === realPath)) {
                 this.rule.items.push({
                     tagName,
                     key: realPath,
                     name: name,
                     mockKey: type === 'input' ? '' : type,
-                    type
+                    type,
+                    mockName
                 })
             }
         }

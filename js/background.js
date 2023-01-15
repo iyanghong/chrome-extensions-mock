@@ -375,20 +375,21 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         }
     } else if (typeof message === 'object') {
         if (message.key === 'setMock') {
-            message.data.items.forEach(data => {
+            message.data.items.forEach((data, index) => {
                 let mock = MOCK_LIST.filter(item => item.id === data.mockKey)[0]
+                let value = ''
                 if (mock && mock.handle) {
-                    chrome.tabs.query({active: true, currentWindow: true}, (tab) => {//获取当前tab
-                        if (tab[0]) {
-                            let value = mock.handle()
-                            chrome.scripting.executeScript({
-                                target: {tabId: tab[0].id},
-                                func: setMock,
-                                args: [data.key, value, data.type]
-                            })
-                        }
-                    });
+                    value = mock.handle()
                 }
+                chrome.tabs.query({active: true, currentWindow: true}, (tab) => {//获取当前tab
+                    if (tab[0]) {
+                        chrome.scripting.executeScript({
+                            target: {tabId: tab[0].id},
+                            func: setMock,
+                            args: [{key: data.key, value, type: data.type, index}]
+                        })
+                    }
+                });
             })
         } else if (message.key === 'getStorageMockRules') {
             (async () => {
@@ -404,6 +405,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         } else if (message.key === 'updateStorageMockRulesByPageRule') {
             (async () => {
                 let result = await updateStorageMockRulesByPageRule(...(message.args || []))
+                sendResponse(result)
+            })()
+        }else if (message.key === 'saveStorageMockRules'){
+            (async () => {
+                let result = await saveStorageMockRules(...(message.args || []))
                 sendResponse(result)
             })()
         }
@@ -469,7 +475,8 @@ function setFocusedInputMockData(data) {
     return true
 }
 
-function setMock(key, value, type) {
+function setMock({key, value, type, index}) {
+    // console.log({key,type,el : document.querySelectorAll(key)})
     function RandomNumBoth(Min, Max) {
         let Range = Max - Min;
         let Rand = Math.random();
@@ -485,16 +492,59 @@ function setMock(key, value, type) {
                 let index = RandomNumBoth(0, elList.length - 1)
                 elList[index].click()
             }
-            console.log(elList)
             break
         case 'checkbox':
             let checkboxList = document.querySelectorAll(key)
             if (checkboxList.length) {
-                checkboxList.sort(() => Math.random() > 0.5 ? -1 : 1)
+                let keys = Object.keys(checkboxList).sort(() => Math.random() > 0.5 ? -1 : 1).map(value => Number(value))
                 let index = RandomNumBoth(0, checkboxList.length - 1)
-                for (let i = 0;i<=index;i++){
-                    checkboxList[i].click()
+                for (let i = 0; i <= index; i++) {
+                    checkboxList[keys[i]].click()
                 }
+            }
+            break
+        case 'switch':
+            let switchEl = document.querySelector(key)
+            if (switchEl) {
+                let isSwitchOpen = RandomNumBoth(0, 1)
+                if (isSwitchOpen) switchEl.click()
+            }
+            break
+        case 'elSelect':
+            let elSelectEl = document.querySelector(key)
+            if (elSelectEl) {
+                elSelectEl.click()
+
+                setTimeout(() => {
+                    let elSelectElRect = elSelectEl.getBoundingClientRect() // getElementAbsPos(elSelectEl)
+                    let elSelectPopperList = document.querySelectorAll('.el-select-dropdown.el-popper')
+                    for (let item of elSelectPopperList) {
+                        let itemRect = item.getBoundingClientRect() //getElementAbsPos(item)
+                        let absX = Math.abs(Math.abs(itemRect.x + document.documentElement.scrollLeft) - Math.abs(elSelectElRect.x + document.documentElement.scrollLeft))
+                        let absY = Math.abs(Math.abs(itemRect.y + document.documentElement.scrollTop) - Math.abs(elSelectElRect.y + document.documentElement.scrollTop))
+                        /*console.log({
+                            index,
+                            key,
+                            elSelectEl,
+                            elSelectElRect,
+                            item,
+                            itemRect,
+                            absX,
+                            absY,
+                            elRect: elSelectEl.getBoundingClientRect(),
+                            rect: item.getBoundingClientRect()
+                        })
+                        console.log('flag', absX < 100 && absY < 100)*/
+                        if (absX < 100 && absY < 100) {
+                            let elSelectOptionList = item.querySelectorAll('.el-select-dropdown__item')
+                            if (elSelectOptionList.length) {
+                                let index = RandomNumBoth(0, elSelectOptionList.length - 1)
+                                elSelectOptionList[index].click()
+                            }
+                            break
+                        }
+                    }
+                }, index * 50)
             }
             break
         default:
@@ -506,6 +556,17 @@ function setMock(key, value, type) {
                 el.dispatchEvent(event);
             }
             break
+    }
+
+    function getElementAbsPos(e) {
+        let t = e.offsetTop;
+        let l = e.offsetLeft;
+        while (e = e.offsetParent) {
+            t += e.offsetTop;
+            l += e.offsetLeft;
+        }
+
+        return {x: l, y: t};
     }
 
     return true
@@ -568,9 +629,9 @@ function setStorageMockRulesByPageRule(pageRule) {
                     currentPageRule.rules.push(pageRule)
                 }
                 result[index] = currentPageRule
-                chrome.storage.local.set({MockRules: result})
-            }
 
+            }
+            chrome.storage.local.set({MockRules: result})
             resolve()
         })
     })
@@ -588,5 +649,12 @@ function updateStorageMockRulesByPageRule(pageRules) {
             chrome.storage.local.set({MockRules: result})
             resolve()
         })
+    })
+}
+
+function saveStorageMockRules(rules) {
+    return new Promise(resolve => {
+        chrome.storage.local.set({MockRules: rules})
+        resolve()
     })
 }
