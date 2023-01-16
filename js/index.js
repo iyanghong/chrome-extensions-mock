@@ -600,7 +600,7 @@ function newRuleForm(tab, rule) {
                     mockKeyInputTd.appendChild(createElement({
                         tagName: 'span',
                         style: 'cursor:not-allowed ',
-                        text: `${typeText[item.mockName]}随机`
+                        text: `${typeText[item.type]}随机`
                     }))
                 } else {
                     mockKeyInputTd.appendChild(this.getSelectElement(item.key, item.mockName || '请选择'))
@@ -718,7 +718,7 @@ function newRuleForm(tab, rule) {
                     if (target.getAttribute('placeholder')) {
                         name = target.getAttribute('placeholder').replace('请选择', '').replace('请输入', '').replace('Please enter', '').replace('please enter', '')
                     }
-                    this.pushRuleItem(target.tagName, realPath, name)
+                    this.pushRuleItem(target.tagName, realPath, name, 'input', '')
                 }
             }
 
@@ -841,8 +841,11 @@ function newRuleForm(tab, rule) {
                 switch: '开关',
                 elSelect: '下拉框随机'
             }
+            console.log(typeText)
+            console.log(type)
+            console.log(typeText[type])
 
-            this.pushRuleItem(target.tagName, realPath, name, type, typeText[type] || '')
+            this.pushRuleItem(target.tagName, realPath, name, type, typeText[type] ? `${typeText[type]}随机` : '')
             this.render()
 
             function getFormItemLabel(el, deep = 4) {
@@ -1005,6 +1008,7 @@ function newRuleForm(tab, rule) {
         pushRuleItem(tagName, realPath, name = '', type = 'input', mockName = '') {
             if (!this.rule.items.some(item => item.key === realPath)) {
                 this.rule.items.push({
+                    id: this.getId(),
                     tagName,
                     key: realPath,
                     name: name,

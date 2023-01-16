@@ -1,5 +1,6 @@
 import mock from "./lib/mock.js";
 import Region from "./lib/region.js";
+import network from "./lib/network.js";
 
 const MOCK_LIST = [
     {
@@ -217,6 +218,12 @@ const MOCK_LIST = [
         title: 'web账号类型'
     },
     {
+        id: 'WebNickName',
+        parentId: 'Web',
+        title: '昵称',
+        handle: network.nickname
+    },
+    {
         id: 'WebAccount',
         parentId: 'Web',
         title: '账号名',
@@ -227,6 +234,12 @@ const MOCK_LIST = [
         parentId: 'Web',
         title: '密码',
         handle: mock.web.password
+    },
+    {
+        id: 'WebPersonDescription',
+        parentId: 'Web',
+        title: '个性签名',
+        handle: network.personDescription
     },
     {
         id: 'WebQQ',
@@ -259,6 +272,12 @@ const MOCK_LIST = [
         handle() {
             return mock.web.ip(true)
         }
+    },
+    {
+        id: 'WebBankIdCard',
+        parentId: 'Web',
+        title: '银行卡号',
+        handle: network.bankIdCard
     },
     {
         id: 'WebColor',
@@ -407,9 +426,24 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
                 let result = await updateStorageMockRulesByPageRule(...(message.args || []))
                 sendResponse(result)
             })()
-        }else if (message.key === 'saveStorageMockRules'){
+        } else if (message.key === 'saveStorageMockRules') {
             (async () => {
                 let result = await saveStorageMockRules(...(message.args || []))
+                sendResponse(result)
+            })()
+        } else if (message.key === 'deleteStorageMockRules') {
+            (async () => {
+                let result = await deleteStorageMockRules(...(message.args || []))
+                sendResponse(result)
+            })()
+        } else if (message.key === 'deleteStorageMockRulesByPageRules') {
+            (async () => {
+                let result = await deleteStorageMockRulesByPageRules(...(message.args || []))
+                sendResponse(result)
+            })()
+        }else if (message.key === 'deleteStorageMockRulesByPageRulesItem'){
+            (async () => {
+                let result = await deleteStorageMockRulesByPageRulesItem(...(message.args || []))
                 sendResponse(result)
             })()
         }
@@ -475,6 +509,10 @@ function setFocusedInputMockData(data) {
     return true
 }
 
+function setMockData(data) {
+
+}
+
 function setMock({key, value, type, index}) {
     // console.log({key,type,el : document.querySelectorAll(key)})
     function RandomNumBoth(Min, Max) {
@@ -516,35 +554,29 @@ function setMock({key, value, type, index}) {
                 elSelectEl.click()
 
                 setTimeout(() => {
-                    let elSelectElRect = elSelectEl.getBoundingClientRect() // getElementAbsPos(elSelectEl)
+                    //let elSelectElRect = elSelectEl.getBoundingClientRect() // getElementAbsPos(elSelectEl)
                     let elSelectPopperList = document.querySelectorAll('.el-select-dropdown.el-popper')
                     for (let item of elSelectPopperList) {
-                        let itemRect = item.getBoundingClientRect() //getElementAbsPos(item)
+                        if (getComputedStyle(item).display !== 'none') {
+                            let elSelectOptionList = item.querySelectorAll('.el-select-dropdown__item')
+                            if (elSelectOptionList.length) {
+                                let index = RandomNumBoth(0, elSelectOptionList.length - 1)
+                                elSelectOptionList[index].click()
+                            }
+                        }
+                        /*let itemRect = item.getBoundingClientRect() //getElementAbsPos(item)
                         let absX = Math.abs(Math.abs(itemRect.x + document.documentElement.scrollLeft) - Math.abs(elSelectElRect.x + document.documentElement.scrollLeft))
                         let absY = Math.abs(Math.abs(itemRect.y + document.documentElement.scrollTop) - Math.abs(elSelectElRect.y + document.documentElement.scrollTop))
-                        /*console.log({
-                            index,
-                            key,
-                            elSelectEl,
-                            elSelectElRect,
-                            item,
-                            itemRect,
-                            absX,
-                            absY,
-                            elRect: elSelectEl.getBoundingClientRect(),
-                            rect: item.getBoundingClientRect()
-                        })
-                        console.log('flag', absX < 100 && absY < 100)*/
-                        if (absX < 100 && absY < 100) {
+                        if (absX < 50 && absY < 80) {
                             let elSelectOptionList = item.querySelectorAll('.el-select-dropdown__item')
                             if (elSelectOptionList.length) {
                                 let index = RandomNumBoth(0, elSelectOptionList.length - 1)
                                 elSelectOptionList[index].click()
                             }
                             break
-                        }
+                        }*/
                     }
-                }, index * 50)
+                }, index * 80)
             }
             break
         default:
@@ -656,5 +688,56 @@ function saveStorageMockRules(rules) {
     return new Promise(resolve => {
         chrome.storage.local.set({MockRules: rules})
         resolve()
+    })
+}
+
+function deleteStorageMockRules(pageUrl, isAll = false) {
+    return new Promise(resolve => {
+        getStorageMockRules().then(result => {
+            result = result.filter(item => {
+                if (isAll) {
+                    return item.pageUrl.includes(pageUrl)
+                }
+                return item.pageUrl !== pageUrl
+            })
+            chrome.storage.local.set({MockRules: result})
+            resolve()
+        })
+    })
+}
+
+function deleteStorageMockRulesByPageRules(pageUrl, id) {
+    return new Promise(resolve => {
+        getStorageMockRules().then(result => {
+            result = result.map(item => {
+                if (item.pageUrl === pageUrl) {
+                    console.log(item)
+                    item.rules = item.rules.filter(rule => rule.id !== id)
+                }
+                return item
+            })
+            chrome.storage.local.set({MockRules: result})
+            resolve()
+        })
+    })
+}
+
+function deleteStorageMockRulesByPageRulesItem(pageUrl, ruleId, itemId) {
+    return new Promise(resolve => {
+        getStorageMockRules().then(result => {
+            result = result.map(item => {
+                if (item.pageUrl === pageUrl) {
+                    item.rules = item.rules.map(rule => {
+                        if (rule.id === ruleId) {
+                            rule.items = rule.items.filter(ruleItem => ruleItem.id !== itemId)
+                        }
+                        return rule
+                    })
+                }
+                return item
+            })
+            chrome.storage.local.set({MockRules: result})
+            resolve()
+        })
     })
 }

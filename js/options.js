@@ -12,6 +12,7 @@ class Options {
             args: []
         }).then(result => {
             console.log(result)
+            this.list = []
             let data = {}
             for (let item of result) {
                 let url = new URL(item.pageUrl)
@@ -94,7 +95,22 @@ class Options {
                 children: [
                     {tagName: 'td', text: item.origin},
                     {tagName: 'td', text: item.pages.length},
-                    {tagName: 'td', children: [{tagName: 'button', text: '删除'}]},
+                    {
+                        tagName: 'td', children: [{
+                            tagName: 'button', text: '删除', events: {
+                                click: (e) => {
+                                    e.stopPropagation();
+                                    chrome.runtime.sendMessage('', {
+                                        key: 'deleteStorageMockRules',
+                                        args: [item.pages[0].pageUrl, true]
+                                    }).then(() => {
+                                        this.loadData()
+                                    })
+                                    // console.log(item)
+                                }
+                            }
+                        }]
+                    },
                 ],
                 events: {
                     click: () => {
@@ -152,7 +168,22 @@ class Options {
                 children: [
                     {tagName: 'td', text: item.pageUrl},
                     {tagName: 'td', text: item.rules.length},
-                    {tagName: 'td', children: [{tagName: 'button', text: '删除'}]},
+                    {
+                        tagName: 'td', children: [{
+                            tagName: 'button', text: '删除', events: {
+                                click: e => {
+                                    e.stopPropagation()
+                                    console.log(item)
+                                    chrome.runtime.sendMessage('', {
+                                        key: 'deleteStorageMockRules',
+                                        args: [item.pageUrl]
+                                    }).then(() => {
+                                        this.loadData()
+                                    })
+                                }
+                            }
+                        }]
+                    },
                 ],
                 events: {
                     click: () => {
@@ -206,7 +237,23 @@ class Options {
                 children: [
                     {tagName: 'td', text: item.name},
                     {tagName: 'td', text: item.items.length},
-                    {tagName: 'td', children: [{tagName: 'button', text: '删除'}]},
+                    {
+                        tagName: 'td', children: [{
+                            tagName: 'button', text: '删除', events: {
+                                click: e => {
+                                    e.stopPropagation()
+                                    console.log(item)
+                                    chrome.runtime.sendMessage('', {
+                                        key: 'deleteStorageMockRulesByPageRules',
+                                        args: [item.key, item.id]
+                                    }).then(() => {
+                                        this.loadData()
+                                    })
+
+                                }
+                            }
+                        }]
+                    },
                 ],
                 events: {
                     click: () => {
@@ -222,7 +269,7 @@ class Options {
                 let pageTr = createElement({tagName: 'tr',})
                 let pageTd = createElement({tagName: 'td', style: 'border:0;'})
                 pageTd.setAttribute('colspan', 3)
-                pageTd.appendChild(this.renderPageRulesItems(item.items))
+                pageTd.appendChild(this.renderPageRulesItems(item.items,item.key,item.id))
                 pageTr.appendChild(pageTd)
                 tbody.appendChild(pageTr)
             }
@@ -234,7 +281,8 @@ class Options {
         return table
     }
 
-    renderPageRulesItems(items) {
+    renderPageRulesItems(items,pageUrl,ruleId) {
+        console.log(pageUrl)
         let table = createElement({
             tagName: 'table',
             style: 'margin-left:60px;width:calc(100% - 60px)',
@@ -264,7 +312,28 @@ class Options {
                     {tagName: 'td', text: item.name},
                     {tagName: 'td', text: item.mockName},
                     {tagName: 'td', text: item.type},
-                    {tagName: 'td', children: [{tagName: 'button', text: '删除'}]},
+                    {
+                        tagName: 'td', children: [{
+                            tagName: 'button', text: '删除', events: {
+                                click: e => {
+                                    e.stopPropagation()
+                                    console.log(pageUrl,ruleId,item)
+                                    chrome.runtime.sendMessage('', {
+                                        key: 'deleteStorageMockRulesByPageRulesItem',
+                                        args: [pageUrl,ruleId, item.id]
+                                    }).then(() => {
+                                        this.loadData()
+                                    })
+                                    /*chrome.runtime.sendMessage('', {
+                                        key: 'deleteStorageMockRules',
+                                        args: [item.pages[0].pageUrl, true]
+                                    }).then(() => {
+                                        this.loadData()
+                                    })*/
+                                }
+                            }
+                        }]
+                    },
                 ]
             })
             tbody.appendChild(tr)
