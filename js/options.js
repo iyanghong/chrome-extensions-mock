@@ -97,7 +97,7 @@ class Options {
                     {tagName: 'td', text: item.pages.length},
                     {
                         tagName: 'td', children: [{
-                            tagName: 'button', text: '删除', events: {
+                            tagName: 'button', classList: ['btn-text', 'btn-delete'], text: '删除', events: {
                                 click: (e) => {
                                     e.stopPropagation();
                                     chrome.runtime.sendMessage('', {
@@ -106,7 +106,6 @@ class Options {
                                     }).then(() => {
                                         this.loadData()
                                     })
-                                    // console.log(item)
                                 }
                             }
                         }]
@@ -114,7 +113,6 @@ class Options {
                 ],
                 events: {
                     click: () => {
-                        console.log(item.showChild)
                         item.showChild = !item.showChild
                         this.render()
                     }
@@ -170,10 +168,9 @@ class Options {
                     {tagName: 'td', text: item.rules.length},
                     {
                         tagName: 'td', children: [{
-                            tagName: 'button', text: '删除', events: {
+                            tagName: 'button', classList: ['btn-text', 'btn-delete'], text: '删除', events: {
                                 click: e => {
                                     e.stopPropagation()
-                                    console.log(item)
                                     chrome.runtime.sendMessage('', {
                                         key: 'deleteStorageMockRules',
                                         args: [item.pageUrl]
@@ -188,7 +185,6 @@ class Options {
                 events: {
                     click: () => {
                         item.showChild = !item.showChild
-                        console.log(item.showChild)
                         this.render()
                     }
                 }
@@ -239,10 +235,9 @@ class Options {
                     {tagName: 'td', text: item.items.length},
                     {
                         tagName: 'td', children: [{
-                            tagName: 'button', text: '删除', events: {
+                            tagName: 'button', classList: ['btn-text', 'btn-delete'], text: '删除', events: {
                                 click: e => {
                                     e.stopPropagation()
-                                    console.log(item)
                                     chrome.runtime.sendMessage('', {
                                         key: 'deleteStorageMockRulesByPageRules',
                                         args: [item.key, item.id]
@@ -258,7 +253,6 @@ class Options {
                 events: {
                     click: () => {
                         item.showChild = !item.showChild
-                        console.log(item.showChild)
                         this.render()
                     }
                 }
@@ -269,7 +263,7 @@ class Options {
                 let pageTr = createElement({tagName: 'tr',})
                 let pageTd = createElement({tagName: 'td', style: 'border:0;'})
                 pageTd.setAttribute('colspan', 3)
-                pageTd.appendChild(this.renderPageRulesItems(item.items,item.key,item.id))
+                pageTd.appendChild(this.renderPageRulesItems(item.items, item.key, item.id))
                 pageTr.appendChild(pageTd)
                 tbody.appendChild(pageTr)
             }
@@ -281,8 +275,7 @@ class Options {
         return table
     }
 
-    renderPageRulesItems(items,pageUrl,ruleId) {
-        console.log(pageUrl)
+    renderPageRulesItems(items, pageUrl, ruleId) {
         let table = createElement({
             tagName: 'table',
             style: 'margin-left:60px;width:calc(100% - 60px)',
@@ -305,7 +298,6 @@ class Options {
         })
         let tbody = createElement({tagName: 'tbody'})
         for (let item of items) {
-            console.log(item)
             let tr = createElement({
                 tagName: 'tr',
                 children: [
@@ -314,13 +306,12 @@ class Options {
                     {tagName: 'td', text: item.type},
                     {
                         tagName: 'td', children: [{
-                            tagName: 'button', text: '删除', events: {
+                            tagName: 'button', classList: ['btn-text', 'btn-delete'], text: '删除', events: {
                                 click: e => {
                                     e.stopPropagation()
-                                    console.log(pageUrl,ruleId,item)
                                     chrome.runtime.sendMessage('', {
                                         key: 'deleteStorageMockRulesByPageRulesItem',
-                                        args: [pageUrl,ruleId, item.id]
+                                        args: [pageUrl, ruleId, item.id]
                                     }).then(() => {
                                         this.loadData()
                                     })
@@ -351,52 +342,3 @@ window.onload = function () {
     new Options()
 }
 
-/*
-const options = {
-    // el: '#app',
-    data() {
-        return {
-            list: [],
-            activeName : 'pageRules'
-        }
-    },
-    created() {
-        this.getData()
-    },
-    mounted(){
-        console.log(this.$el)
-    },
-    methods:{
-        getData(){
-            chrome.runtime.sendMessage('', {
-                key: 'getStorageMockRules',
-                args: []
-            }).then(result => {
-                let data = {
-
-                }
-                for (let item of result){
-                    let url = new URL(item.pageUrl)
-                    if(data[url.origin]){
-                        data[url.origin].push(item)
-                    }else{
-                        data[url.origin] = [item]
-                    }
-                }
-                for (let name in data){
-                    this.list.push({
-                        origin : name,
-                        pages : data[name]
-                    })
-                }
-                console.log(this.list)
-
-            })
-        }
-    }
-}
-
-
-window.onload = function (){
-    new Vue(options)
-}*/

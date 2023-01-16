@@ -466,22 +466,8 @@ chrome.runtime.onInstalled.addListener(async () => {
         chrome.contextMenus.create(menuData);
 
     })
-    /*chrome.history.onVisited.addListener(function () {
-        console.log('changed')
-    })
-*/
 
 });
-/*chrome.runtime.onUpdateAvailable.addListener(
-    async () => {
-        console.log('onUpdateAvailable')
-    }
-)
-chrome.runtime.onRestartRequired.addListener(
-    async () => {
-        console.log('onBrowserUpdateAvailable')
-    }
-)*/
 
 
 // Open a new search tab when the user clicks a context menu
@@ -514,7 +500,6 @@ function setMockData(data) {
 }
 
 function setMock({key, value, type, index}) {
-    // console.log({key,type,el : document.querySelectorAll(key)})
     function RandomNumBoth(Min, Max) {
         let Range = Max - Min;
         let Rand = Math.random();
@@ -711,7 +696,6 @@ function deleteStorageMockRulesByPageRules(pageUrl, id) {
         getStorageMockRules().then(result => {
             result = result.map(item => {
                 if (item.pageUrl === pageUrl) {
-                    console.log(item)
                     item.rules = item.rules.filter(rule => rule.id !== id)
                 }
                 return item

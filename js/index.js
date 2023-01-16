@@ -25,11 +25,10 @@ class Mock {
                 this.renderRuleUl()
 
             })
-
-
             document.querySelector('#btn-create').addEventListener('click', () => {
                 this.handleCreateRule()
             })
+
             document.querySelector('#btn-option').addEventListener('click', () => {
                 chrome.runtime.openOptionsPage()
             })
