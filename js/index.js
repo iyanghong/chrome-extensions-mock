@@ -168,10 +168,10 @@ function newRuleForm(tab, rule) {
         getId(min = 32, max = 32) {
             min = min || 32;
             max = max || min;
-            var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';
+            let $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';
             /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
-            var maxPos = $chars.length;
-            var result = '';
+            let maxPos = $chars.length;
+            let result = '';
             let range = min;
             if (min !== max) {
                 range = Math.round(Math.random() * (max - min)) + min;
