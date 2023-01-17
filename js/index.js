@@ -17,7 +17,6 @@ class Mock {
                 args: []
             }).then(result => {
                 this.rules = result
-                console.log(result)
                 let currentRule = this.rules.filter(item => item.pageUrl === this.currentKey)[0]
                 if (currentRule) {
                     this.currentRule = currentRule
@@ -278,9 +277,13 @@ function newRuleForm(tab, rule) {
             container.appendChild(this.renderHeader(container))
             container.appendChild(this.renderNameInput())
             container.appendChild(this.renderTip())
-
+            let markScrollContainer = createElement({
+                tagName: 'div',
+                style: 'position:relative;'
+            })
             let tableContainer = createElement({
                 tagName: 'div',
+                style: 'height:300px;overflow-y:scroll;overflow-x:hidden;'
             })
             if (this.isLoaded) {
                 tableContainer.appendChild(this.renderItemList())
@@ -290,7 +293,9 @@ function newRuleForm(tab, rule) {
                 }, 50)
             }
 
-            container.appendChild(tableContainer)
+            markScrollContainer.appendChild(tableContainer)
+
+            container.appendChild(markScrollContainer)
 
             container.appendChild(this.renderStyle())
             container.appendChild(this.renderFooter())
@@ -340,11 +345,12 @@ function newRuleForm(tab, rule) {
                 },
                 {
                     key: '.mock-container-select-mock',
-                    value: `width: 80px;background:#fff;display: flex;flex-wrap: nowrap;position: relative;cursor: pointer;text-align: center;font-size:12px;line-height:20px`
+                    value: `width: 80px;background:#fff;display: flex;flex-wrap: nowrap;cursor: pointer;text-align: center;font-size:12px;line-height:20px`
                 },
 
                 {
-                    key: ['.mock-container-select-mock:hover .mock-container-select-mock-list', '.mock-container-select-mock .mock-container-select-mock-list li:hover > .mock-children'],
+                    // '.mock-container-select-mock:hover .mock-container-select-mock-list'
+                    key: ['.mock-container-select-mock .mock-container-select-mock-list li:hover > .mock-children'],
                     value: 'display: block;'
                 },
                 {
@@ -353,7 +359,7 @@ function newRuleForm(tab, rule) {
                 },
                 {
                     key: '.mock-container-select-mock .mock-container-select-mock-list li',
-                    value: `list-style: none;position: relative;cursor: pointer;width: 80px;border: 1px solid #eee;text-align: center;background-color: #fff;display: flex;justify-content: space-between;flex-wrap: nowrap;`
+                    value: `list-style: none;position: relative;cursor: pointer;width: 90px;border: 1px solid #eee;text-align: center;background-color: #fff;display: flex;justify-content: space-between;flex-wrap: nowrap;`
                 },
                 {
                     key: '.mock-container-select-mock .mock-container-select-mock-list li>span',
@@ -560,7 +566,7 @@ function newRuleForm(tab, rule) {
             let tableList = createElement({
                 tagName: 'table',
                 classList: `${this.containerId}-rule-item-list`,
-                style: `width: 270px;order-collapse: collapse;margin: 0 auto;text-align: center;`,
+                style: `width: 260px;order-collapse: collapse;margin: 0 auto;text-align: center;`,
                 children: [
                     {
                         tagName: 'thead',
@@ -593,16 +599,18 @@ function newRuleForm(tab, rule) {
                     radio: '单选框',
                     checkbox: '多选框',
                     switch: '开关',
-                    elSelect: '下拉框随机'
+                    elSelect: '下拉框'
                 }
                 if (typeText[item.type]) {
                     mockKeyInputTd.appendChild(createElement({
                         tagName: 'span',
-                        style: 'cursor:not-allowed ',
+                        style: 'cursor:not-allowed;font-size:12px',
                         text: `${typeText[item.type]}随机`
                     }))
                 } else {
-                    mockKeyInputTd.appendChild(this.getSelectElement(item.key, item.mockName || '请选择'))
+                    let selectList = this.getSelectElement(item.key, item.mockName || '请选择')
+                    mockKeyInputTd.appendChild(selectList)
+                    // mockKeyInputTd
                 }
                 ruleItem.appendChild(mockKeyInputTd)
 
@@ -631,23 +639,35 @@ function newRuleForm(tab, rule) {
                 tagName: 'div',
                 classList: 'mock-container-select-mock',
                 children: [
-                    {
+                    /*{
                         tagName: 'span',
                         text: value
-                    }
+                    }*/
                 ]
+            })
+            let textName = createElement({
+                tagName: 'span',
+                style:'display:block;width:100%;text-align:center',
+                text:value
             })
 
 
             let ul = createElement({
                 tagName: 'ul',
-                classList: 'mock-container-select-mock-list'
+                classList: 'mock-container-select-mock-list',
+                style: 'position:absolute;top:0px;left:125px'
+            })
+
+            textName.addEventListener('click',() => {
+                ul.style.display = 'block'
             })
 
             for (let item of this.mockList) {
                 let li = this.getSelectLiElement(item, key)
                 ul.appendChild(li)
             }
+
+            box.appendChild(textName)
 
             box.appendChild(ul)
 
@@ -662,7 +682,8 @@ function newRuleForm(tab, rule) {
                 li.addEventListener('click', () => {
                     let index = this.getRuleItemIndexByKey(key)
                     this.rule.items[index].mockKey = item.id
-                    this.rule.items[index].mockName = item.title
+                    let title = item.title
+                    this.rule.items[index].mockName = title
                     this.render()
                 })
             }
@@ -838,11 +859,8 @@ function newRuleForm(tab, rule) {
                 radio: '单选框',
                 checkbox: '多选框',
                 switch: '开关',
-                elSelect: '下拉框随机'
+                elSelect: '下拉框'
             }
-            console.log(typeText)
-            console.log(type)
-            console.log(typeText[type])
 
             this.pushRuleItem(target.tagName, realPath, name, type, typeText[type] ? `${typeText[type]}随机` : '')
             this.render()

@@ -25,19 +25,19 @@ const MOCK_LIST = [
     {
         id: 'CNPersonNameFullName',
         parentId: 'CNPersonName',
-        title: '全名不分男女',
+        title: '姓名-中文',
         handle: mock.cn.fullName
     },
     {
         id: 'CNPersonNameMaleName',
         parentId: 'CNPersonName',
-        title: '男姓名',
+        title: '男姓名-中文',
         handle: mock.cn.maleName
     },
     {
         id: 'CNPersonNameFemaleName',
         parentId: 'CNPersonName',
-        title: '女姓名',
+        title: '女姓名-中文',
         handle: mock.cn.femaleName
     },
     {
@@ -48,19 +48,19 @@ const MOCK_LIST = [
     {
         id: 'ENPersonNameFullName',
         parentId: 'ENPersonName',
-        title: '全名不分男女',
+        title: '姓名-英文',
         handle: mock.en.fullName
     },
     {
         id: 'ENPersonNameMaleName',
         parentId: 'ENPersonName',
-        title: '男姓名',
+        title: '男姓名-英文',
         handle: mock.en.maleName
     },
     {
         id: 'ENPersonNameFemaleName',
         parentId: 'ENPersonName',
-        title: '女姓名',
+        title: '女姓名-英文',
         handle: mock.en.femaleName
     },
     {
@@ -146,7 +146,7 @@ const MOCK_LIST = [
     {
         id: 'AddressLongitude',
         parentId: 'Address',
-        title: '地理坐标，经度',
+        title: '坐标，经度',
         handle() {
             let region = new Region();
             return region.longitude()
@@ -155,7 +155,7 @@ const MOCK_LIST = [
     {
         id: 'AddressLatitude',
         parentId: 'Address',
-        title: '地理坐标，纬度',
+        title: '坐标，纬度',
         handle() {
             let region = new Region();
             return region.latitude()
@@ -215,7 +215,7 @@ const MOCK_LIST = [
     {
         id: 'Web',
         parentId: 'Top',
-        title: 'web账号类型'
+        title: 'Web账号'
     },
     {
         id: 'WebNickName',
@@ -305,8 +305,8 @@ const MOCK_LIST = [
     {
         id: 'ChineseText',
         parentId: 'Top',
-        title: '随机中文文本',
-        handle: mock.text.chinese
+        title: '随机汉字',
+        // handle: mock.text.chinese
     },
 ]
 
@@ -325,7 +325,7 @@ for (let i = 1; i < 25; i++) {
     MOCK_LIST.push({
         id: `Date${len}`,
         parentId: 'Date',
-        title: `${len}年内`,
+        title: `${len}年内日期`,
         handle() {
             return mock.date.time(startDate, endDate, 'yyyy-MM-dd')
         }
@@ -347,7 +347,7 @@ for (let i = 1; i < 10; i++) {
     MOCK_LIST.push({
         id: `Number${i}`,
         parentId: 'Number',
-        title: `${i}位数`,
+        title: `${i}位数字`,
         handle() {
             return mock.rand.int(min, max)
         }
@@ -367,7 +367,7 @@ for (let i = 1; i < 10; i++) {
     MOCK_LIST.push({
         id: `LetterNumber${i}`,
         parentId: 'LetterNumber',
-        title: `${len}个字母+数字`,
+        title: `${len}个字符串`,
         handle() {
             return mock.rand.alphanum(len, true)
         }
@@ -378,7 +378,7 @@ for (let i = 1; i < 10; i++) {
     MOCK_LIST.push({
         id: `ChineseText${len}`,
         parentId: 'ChineseText',
-        title: `${len}个中文文本`,
+        title: `${len}个汉字`,
         handle() {
             return mock.text.chinese(len)
         }
@@ -441,7 +441,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
                 let result = await deleteStorageMockRulesByPageRules(...(message.args || []))
                 sendResponse(result)
             })()
-        }else if (message.key === 'deleteStorageMockRulesByPageRulesItem'){
+        } else if (message.key === 'deleteStorageMockRulesByPageRulesItem') {
             (async () => {
                 let result = await deleteStorageMockRulesByPageRulesItem(...(message.args || []))
                 sendResponse(result)
@@ -589,14 +589,15 @@ function setMock({key, value, type, index}) {
     return true
 }
 
-function getMockListTree(parentId = 'Top') {
+function getMockListTree(parentId = 'Top', name = '') {
     let list = [];
     for (let item of MOCK_LIST) {
         if (item.parentId === parentId) {
             list.push({
                 id: item.id,
                 title: item.title,
-                children: getMockListTree(item.id),
+                // mockName: item.title + (name ? `-${name}` : ''),
+                children: getMockListTree(item.id, item.title),
                 hasHandle: item.handle !== undefined
             })
         }
