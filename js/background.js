@@ -1,6 +1,7 @@
 import mock from "./lib/mock.js";
 import Region from "./lib/region.js";
 import network from "./lib/network.js";
+import idioms from "./lib/idiom.js";
 
 const MOCK_LIST = [
     {
@@ -98,6 +99,15 @@ const MOCK_LIST = [
         parentId: 'Top',
         title: 'UUID',
         handle: mock.util.uuid
+    },
+    {
+        id: 'Idioms',
+        parentId: 'Top',
+        title: '成语',
+        handle: () => {
+          let index =  Math.round(Math.random() * idioms.length);
+          return idioms[index]
+        }
     },
 
 
