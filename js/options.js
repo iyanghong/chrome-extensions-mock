@@ -3,6 +3,9 @@ class Options {
     activeName = 'pageRules'
 
     constructor() {
+        document.querySelector('#btn-subtitle').addEventListener('click',() => {
+            location.href = 'https://www.iyanghong.cn'
+        })
         this.loadData()
     }
 
