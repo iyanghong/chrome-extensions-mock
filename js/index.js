@@ -135,6 +135,14 @@ function newRuleForm(tab, rule) {
 
         containerStyle = null
 
+        typeText = {
+            radio: '单选框',
+            checkbox: '多选框',
+            switch: '开关',
+            elSelect: '下拉框',
+            antdSelect: '下拉框'
+        }
+
 
         constructor(currentTab, rule = null, callback = null) {
             if (rule != null) {
@@ -595,17 +603,11 @@ function newRuleForm(tab, rule) {
                 ruleItem.appendChild(nameInputTd)
 
                 let mockKeyInputTd = document.createElement('td')
-                let typeText = {
-                    radio: '单选框',
-                    checkbox: '多选框',
-                    switch: '开关',
-                    elSelect: '下拉框'
-                }
-                if (typeText[item.type]) {
+                if (this.typeText[item.type]) {
                     mockKeyInputTd.appendChild(createElement({
                         tagName: 'span',
                         style: 'cursor:not-allowed;font-size:12px',
-                        text: `${typeText[item.type]}随机`
+                        text: `${this.typeText[item.type]}随机`
                     }))
                 } else {
                     let selectList = this.getSelectElement(item.key, item.mockName || '请选择')
@@ -647,8 +649,8 @@ function newRuleForm(tab, rule) {
             })
             let textName = createElement({
                 tagName: 'span',
-                style:'display:block;width:100%;text-align:center',
-                text:value
+                style: 'display:block;width:100%;text-align:center',
+                text: value
             })
 
 
@@ -658,7 +660,7 @@ function newRuleForm(tab, rule) {
                 style: 'position:absolute;top:0px;left:125px'
             })
 
-            textName.addEventListener('click',() => {
+            textName.addEventListener('click', () => {
                 ul.style.display = 'block'
             })
 
@@ -727,6 +729,9 @@ function newRuleForm(tab, rule) {
                 return false
             }
             if (this.resolveElementUIElement(target)) {
+                return true
+            }
+            if (this.resolveAntdDesignElement(target)) {
                 return true
             }
 
@@ -818,6 +823,60 @@ function newRuleForm(tab, rule) {
             return stack.join(' > ');
         }
 
+        resolveAntdDesignElement(target) {
+            let type = 'input', name = ''
+            console.log(target)
+            if (target.tagName === 'SPAN' && (target.parentNode.classList.contains('ant-radio-wrapper') || target.parentNode.classList.contains('ant-radio-button-wrapper'))) {
+                type = 'radio'
+                target = target.parentNode.parentNode
+            } else if(target.classList.contains('ant-select-selection-item') || target.classList.contains('ant-select-selection-search')){
+                target = target.parentNode.parentNode
+                type = 'antdSelect'
+            } else if (target.classList.contains('ant-select-selection-search-input')){
+                target = target.parentNode.parentNode.parentNode
+                type = 'antdSelect'
+            } else if(target.classList.contains('ant-switch-inner') || target.classList.contains('ant-switch-handle')){
+                target = target.parentNode
+                type = 'switch'
+            }else if(target.classList.contains('ant-input') || target.classList.contains('ant-input-number-input')){
+                type = 'input'
+                // name = this.resolveInputPlaceholder(target)
+            }else {
+                return false
+            }
+            let realPath = this.getDomPath(target)
+            switch (type) {
+                case 'checkbox':
+                    realPath += ` .ant-checkbox-input`
+                    break
+                case 'radio':
+                    if (target.classList.contains('ant-radio-group-outline')) {
+                        realPath += ' .ant-radio-button-input'
+                    } else {
+                        realPath += ` .ant-radio-input`
+                    }
+                    break
+                default:
+                    break
+            }
+            if (!name) name = this.resolveInputPlaceholder(target) || getFormItemLabel(target)
+            this.pushRuleItem(target.tagName, realPath, name, type, this.typeText[type] ? `${this.typeText[type]}随机` : '')
+            this.render()
+
+            function getFormItemLabel(el, deep = 5) {
+                while (deep > 0) {
+                    if (el.classList.contains('ant-form-item-row')) {
+                        return el.querySelector('.ant-form-item-label label')?.innerText
+                    }
+                    deep--
+                    el = el.parentNode
+                }
+                return ''
+            }
+
+            return true
+        }
+
         resolveElementUIElement(target) {
             let type = 'input', name = ''
             if (target.classList.contains('el-checkbox__label') || target.classList.contains('el-checkbox__inner')) {
@@ -855,14 +914,8 @@ function newRuleForm(tab, rule) {
             }
             if (!name) name = this.resolveInputPlaceholder(target) || getFormItemLabel(target)
 
-            let typeText = {
-                radio: '单选框',
-                checkbox: '多选框',
-                switch: '开关',
-                elSelect: '下拉框'
-            }
 
-            this.pushRuleItem(target.tagName, realPath, name, type, typeText[type] ? `${typeText[type]}随机` : '')
+            this.pushRuleItem(target.tagName, realPath, name, type, this.typeText[type] ? `${this.typeText[type]}随机` : '')
             this.render()
 
             function getFormItemLabel(el, deep = 4) {
@@ -1034,6 +1087,7 @@ function newRuleForm(tab, rule) {
                     mockName
                 })
             }
+
         }
 
         /**
