@@ -105,8 +105,8 @@ const MOCK_LIST = [
         parentId: 'Top',
         title: '成语',
         handle: () => {
-          let index =  Math.round(Math.random() * idioms.length);
-          return idioms[index]
+            let index = Math.round(Math.random() * idioms.length);
+            return idioms[index]
         }
     },
 
@@ -573,6 +573,32 @@ function setMock({key, value, type, index}) {
                     }
                 }, index * 80)
             }
+            break
+        case 'antdSelect':
+            setTimeout(() => {
+                let antdSelect = document.querySelector(key)
+                console.log(antdSelect)
+                if (antdSelect) {
+                    let antdSelectEvent = new Event('focus')
+                    antdSelect.addEventListener('focus',() => {
+                        console.log(123)})
+                    antdSelect.dispatchEvent(antdSelectEvent)//click()
+                    setTimeout(() => {
+                        let antdSelectPopperList = document.querySelectorAll('.ant-select-dropdown')
+                        console.log(antdSelectPopperList)
+                        for (let item of antdSelectPopperList) {
+                            if (!item.classList.contains('ant-select-dropdown-hidden')) {
+                                let antdSelectOptionList = item.querySelectorAll('.ant-select-item.ant-select-item-option')
+                                if (antdSelectOptionList.length) {
+                                    let index = RandomNumBoth(0, antdSelectOptionList.length - 1)
+                                    antdSelectOptionList[index].click()
+                                }
+                            }
+                        }
+                    }, 50)
+
+                }
+            }, index * 80)
             break
         default:
             let el = document.querySelector(key)
