@@ -826,9 +826,13 @@ function newRuleForm(tab, rule) {
          * @returns {boolean}
          */
         resolveAntdDesignElement(target) {
+            console.log(target)
             let type = 'input', name = ''
             if (target.tagName === 'SPAN' && (target.parentNode.classList.contains('ant-radio-wrapper') || target.parentNode.classList.contains('ant-radio-button-wrapper'))) {
                 type = 'radio'
+                target = target.parentNode.parentNode
+            }else if (target.classList.contains('ant-checkbox-input') || (target.tagName === 'SPAN' && target.parentNode.classList.contains('ant-checkbox-wrapper'))){
+                type = 'checkbox'
                 target = target.parentNode.parentNode
             } else if(target.classList.contains('ant-select-selection-item') || target.classList.contains('ant-select-selection-search')){
                 target = target.parentNode.parentNode
@@ -851,22 +855,19 @@ function newRuleForm(tab, rule) {
                     realPath += ` .ant-checkbox-input`
                     break
                 case 'radio':
-                    if (target.classList.contains('ant-radio-group-outline')) {
-                        realPath += ' .ant-radio-button-input'
-                    } else {
-                        realPath += ` .ant-radio-input`
-                    }
+                    realPath += target.querySelector('.ant-radio-button-input') ? ' .ant-radio-button-input' : ` .ant-radio-input`
                     break
                 default:
                     break
             }
+
             if (!name) name = this.resolveInputPlaceholder(target) || getFormItemLabel(target)
             this.pushRuleItem(target.tagName, realPath, name, type, this.typeText[type] ? `${this.typeText[type]}随机` : '')
             this.render()
 
             function getFormItemLabel(el, deep = 5) {
                 while (deep > 0) {
-                    if (el.classList.contains('ant-form-item-row')) {
+                    if (el.classList.contains('ant-form-item-row') || el.classList.contains('ant-form-item')) {
                         return el.querySelector('.ant-form-item-label label')?.innerText
                     }
                     deep--
@@ -899,7 +900,7 @@ function newRuleForm(tab, rule) {
                 type = 'elSelect'
             } else if (target.classList.contains('el-input__inner') || target.classList.contains('el-textarea__inner')) {
                 type = 'input'
-            } else if (target.classList.contains('el-switch__core')) {
+            } else if (target.classList.contains('el-switch__core') || target.classList.contains('ant-switch')) {
                 type = 'switch'
             } else {
                 return false
@@ -926,6 +927,7 @@ function newRuleForm(tab, rule) {
 
             function getFormItemLabel(el, deep = 4) {
                 while (deep > 0) {
+                    console.log(el)
                     if (el.classList.contains('el-form-item')) {
                         return el.querySelector('.el-form-item__label')?.innerText
                     }
