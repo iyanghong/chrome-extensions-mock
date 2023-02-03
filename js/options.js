@@ -14,7 +14,7 @@ class Options {
             key: 'getStorageMockRules',
             args: []
         }).then(result => {
-            console.log(result)
+
             this.list = []
             let data = {}
             for (let item of result) {
@@ -32,7 +32,7 @@ class Options {
                     pages: data[name]
                 })
             }
-            console.log(this.list)
+
             this.render()
 
         })
@@ -43,7 +43,7 @@ class Options {
         for (let item of this.list) {
             mockRules.push(item.pages)
         }
-        console.log(mockRules)
+
         /*chrome.runtime.sendMessage('', {
             key: 'saveStorageMockRules',
             args: []
