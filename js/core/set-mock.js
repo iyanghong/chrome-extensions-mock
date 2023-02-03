@@ -1,4 +1,4 @@
-export default function setMockExecuteScript (list) {
+export default function setMockExecuteScript(list) {
 
     function RandomNumBoth(Min, Max) {
         let Range = Max - Min;
@@ -12,7 +12,7 @@ export default function setMockExecuteScript (list) {
     }
     const selectMockQueue = []
     const antdSelectedList = []
-
+    const elSelectQueue = []
     list.forEach((item, index) => {
         const {key, value, type} = item
         if (MockStrategy[`${type}Mock`]) {
@@ -82,12 +82,45 @@ export default function setMockExecuteScript (list) {
         }
     }
 
-    function elSelectMock(key, value, type, index) {
-        let elSelectEl = document.querySelector(key)
-        if (elSelectEl) {
-            elSelectEl.click()
 
+
+    function handleRunMockElSelectQueue() {
+        elSelectQueue.forEach(key => {
+            let elSelectEl = document.querySelector(key)
+            if (elSelectEl) {
+                elSelectEl.dispatchEvent(new Event('click'))
+            }
+        })
+        setTimeout(() => {
+            let elSelectPopperList = document.querySelectorAll('.el-select-dropdown.el-popper')
+            for (let item of elSelectPopperList) {
+                let isMultiple = item.classList.contains('is-multiple')
+                if (getComputedStyle(item).display !== 'none') {
+                    let elSelectOptionList = item.querySelectorAll('.el-select-dropdown__item')
+                    if (elSelectOptionList.length) {
+                        if(isMultiple){
+                            let keys = Object.keys(elSelectOptionList).sort(() => Math.random() > 0.5 ? -1 : 1).map(value => Number(value))
+                            let sIndex = RandomNumBoth(0, elSelectOptionList.length - 1)
+                            for (let i = 0; i <= sIndex; i++) {
+                                elSelectOptionList[keys[i]].click()
+                            }
+                        }else {
+                            let index = RandomNumBoth(0, elSelectOptionList.length - 1)
+                            elSelectOptionList[index].click()
+                        }
+                    }
+                }
+            }
+        },100)
+    }
+    handleRunMockElSelectQueue()
+
+    function elSelectMock(key, value, type, index) {
+        elSelectQueue.push(key)
+        /*let elSelectEl = document.querySelector(key)
+        if (elSelectEl) {
             setTimeout(() => {
+                elSelectEl.dispatchEvent(new Event('click'))
                 let elSelectPopperList = document.querySelectorAll('.el-select-dropdown.el-popper')
                 for (let item of elSelectPopperList) {
                     if (getComputedStyle(item).display !== 'none') {
@@ -95,11 +128,12 @@ export default function setMockExecuteScript (list) {
                         if (elSelectOptionList.length) {
                             let index = RandomNumBoth(0, elSelectOptionList.length - 1)
                             elSelectOptionList[index].click()
+                            console.log(1)
                         }
                     }
                 }
-            }, index * 80)
-        }
+            }, index * 100)
+        }*/
     }
 
 
