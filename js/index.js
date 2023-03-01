@@ -2,6 +2,7 @@ class Mock {
     rules = []
     currentKey = ''
     currentRule = null
+    realRuleList = []
 
     currentTab = null
 
@@ -10,19 +11,38 @@ class Mock {
             this.currentTab = tab[0]
             this.renderTitle(tab[0].title)
             this.currentKey = tab[0].url
-            this.currentKey = this.currentKey.split('?')[0]
+
+            let pathArray = this.currentKey.split('/');
+            if (pathArray[2]) {
+                let protocol = pathArray[0];
+                let host = pathArray[2];
+                this.currentKey = protocol + '//' + host;
+            } else {
+                this.currentKey = this.currentKey.split('?')[0]
+            }
 
             chrome.runtime.sendMessage('', {
                 key: 'getStorageMockRules',
                 args: []
             }).then(result => {
                 this.rules = result
-                let currentRule = this.rules.filter(item => item.pageUrl === this.currentKey)[0]
-                if (currentRule) {
-                    this.currentRule = currentRule
-                }
-                this.renderRuleUl()
+                let currentRule = this.rules.filter(item => {
 
+                    return item.pageUrl.indexOf(this.currentKey) > -1
+                })[0]
+
+                this.realRuleList = currentRule || {pageUrl: '',rules:[]}
+                if (this.realRuleList.rules.length){
+                    document.querySelector('#keyword').style.display = 'block'
+                }
+
+                this.filterList()
+                // this.currentRule = currentRule
+
+
+            })
+            document.querySelector('#keyword').addEventListener('input', () => {
+                this.filterList(document.querySelector('#keyword').value || '')
             })
             document.querySelector('#btn-create').addEventListener('click', () => {
                 this.handleCreateRule()
@@ -32,6 +52,14 @@ class Mock {
                 chrome.runtime.openOptionsPage()
             })
         });
+    }
+
+    filterList(keyword = '') {
+        this.currentRule = {
+            pageUrl: this.realRuleList.pageUrl,
+            rules: this.realRuleList.rules.filter(item => item.name.indexOf(keyword) > -1)
+        }
+        this.renderRuleUl()
     }
 
 
@@ -130,6 +158,7 @@ function newRuleForm(tab, rule) {
         $el = null
 
         listenBodyClickEvent = null
+        listenIframeClickEvent = []
         documentMouseUpEvent = null
         documentMouseMoveEvent = null
 
@@ -150,7 +179,14 @@ function newRuleForm(tab, rule) {
                 this.rule = rule
             } else {
                 this.rule.id = this.getId()
-                this.rule.key = currentTab.url
+                let url = currentTab.url
+                let pathArray = currentTab.url.split('/');
+                if (pathArray[2]) {
+                    let protocol = pathArray[0];
+                    let host = pathArray[2];
+                    url = protocol + '//' + host;
+                }
+                this.rule.key = url
             }
             this.rule.title = currentTab.title
             this.render()
@@ -159,9 +195,15 @@ function newRuleForm(tab, rule) {
             })*/
             //mousedown
             this.listenBodyClickEvent = listen(document.body, 'mousedown', e => {
-                // console.log(e)
-                this.resolveElement(e.target)
+                this.resolveElement(e.target, '')
             })
+            for (let item of document.querySelectorAll('iframe')) {
+                this.listenIframeClickEvent.push(listen(item.contentWindow.document, 'mousedown', e => {
+                    let basePath = 'iframe[src="' + item.getAttribute('src') + '"] '
+                    this.resolveElement(e.target, basePath)
+                }))
+
+            }
 
 
             chrome.runtime.sendMessage('', 'getMockListTree').then(res => {
@@ -194,6 +236,10 @@ function newRuleForm(tab, rule) {
 
         handleClose() {
             if (this.listenBodyClickEvent) this.listenBodyClickEvent.remove()
+            for (let item of this.listenIframeClickEvent){
+                if (item) item.remove()
+            }
+            this.listenIframeClickEvent = []
             if (this.documentMouseMoveEvent) this.documentMouseMoveEvent.remove()
             if (this.documentMouseUpEvent) this.documentMouseUpEvent.remove()
             if (this.$el) this.$el.parentNode.removeChild(this.$el)
@@ -220,6 +266,10 @@ function newRuleForm(tab, rule) {
                 args: [this.rule]
             }).then(() => {
                 if (this.listenBodyClickEvent) this.listenBodyClickEvent.remove()
+                for (let item of this.listenIframeClickEvent){
+                    if (item) item.remove()
+                }
+                this.listenIframeClickEvent = []
                 if (this.documentMouseMoveEvent) this.documentMouseMoveEvent.remove()
                 if (this.documentMouseUpEvent) this.documentMouseUpEvent.remove()
                 if (this.$el) this.$el.parentNode.removeChild(this.$el)
@@ -723,26 +773,25 @@ function newRuleForm(tab, rule) {
          * 解析点击元素
          * @param {Element} target
          */
-        resolveElement(target) {
+        resolveElement(target, basePath = '') {
 
             // 判断是不是当前弹出层
-            if (this.checkIsContainer(target)) {
+            if (this.checkIsContainer(target, basePath)) {
                 return false
             }
-            if (this.resolveElementUIElement(target)) {
+            if (this.resolveElementUIElement(target, basePath)) {
                 return true
             }
-            if (this.resolveAntdDesignElement(target)) {
+            if (this.resolveAntdDesignElement(target, basePath)) {
                 return true
             }
 
 
-            this.resolveDefaultElement(target)
+            this.resolveDefaultElement(target, basePath)
 
 
             // this.render()
         }
-
 
 
         getDomPath(el) {
@@ -787,24 +836,24 @@ function newRuleForm(tab, rule) {
             return stack.join(' > ');
         }
 
-        resolveDefaultElement(target){
-            let type = '',suffixRealPath = ''
-            if(target.tagName === 'SELECT'){
+        resolveDefaultElement(target, basePath = '') {
+            let type = '', suffixRealPath = ''
+            if (target.tagName === 'SELECT') {
                 type = 'select'
-            }else if (target.tagName === 'INPUT' && target.getAttribute('type') === 'checkbox'){
+            } else if (target.tagName === 'INPUT' && target.getAttribute('type') === 'checkbox') {
                 type = 'checkbox'
                 target = target.parentNode
                 suffixRealPath = ' input[type="checkbox"]'
-            }else if (target.tagName === 'INPUT' && target.getAttribute('type') === 'radio'){
+            } else if (target.tagName === 'INPUT' && target.getAttribute('type') === 'radio') {
                 type = 'radio'
                 target = target.parentNode
                 suffixRealPath = ' input[type="radio"]'
-            }else if (['INPUT', 'TEXTAREA'].indexOf(target.tagName) > -1){
+            } else if (['INPUT', 'TEXTAREA'].indexOf(target.tagName) > -1) {
                 type = 'input'
-            }else {
+            } else {
                 return false
             }
-            let realPath = this.getDomPath(target) + suffixRealPath
+            let realPath = basePath + this.getDomPath(target) + suffixRealPath
             let name = ''
             if (target.getAttribute('placeholder')) {
                 name = target.getAttribute('placeholder').replace('请选择', '').replace('请输入', '').replace('Please enter', '').replace('please enter', '')
@@ -822,35 +871,37 @@ function newRuleForm(tab, rule) {
             }*/
             this.render()
         }
+
         /**
          * 解析Antd
          * @param target
+         * @param basePath
          * @returns {boolean}
          */
-        resolveAntdDesignElement(target) {
+        resolveAntdDesignElement(target, basePath = '') {
             let type = 'input', name = ''
             if (target.tagName === 'SPAN' && (target.parentNode.classList.contains('ant-radio-wrapper') || target.parentNode.classList.contains('ant-radio-button-wrapper'))) {
                 type = 'radio'
                 target = target.parentNode.parentNode
-            }else if (target.classList.contains('ant-checkbox-input') || (target.tagName === 'SPAN' && target.parentNode.classList.contains('ant-checkbox-wrapper'))){
+            } else if (target.classList.contains('ant-checkbox-input') || (target.tagName === 'SPAN' && target.parentNode.classList.contains('ant-checkbox-wrapper'))) {
                 type = 'checkbox'
                 target = target.parentNode.parentNode
-            } else if(target.classList.contains('ant-select-selection-item') || target.classList.contains('ant-select-selection-search')){
+            } else if (target.classList.contains('ant-select-selection-item') || target.classList.contains('ant-select-selection-search')) {
                 target = target.parentNode.parentNode
                 type = 'antdSelect'
-            } else if (target.classList.contains('ant-select-selection-search-input') || target.classList.contains('ant-select-selection-overflow')){
+            } else if (target.classList.contains('ant-select-selection-search-input') || target.classList.contains('ant-select-selection-overflow')) {
                 target = target.parentNode.parentNode.parentNode
                 type = 'antdSelect'
-            } else if(target.classList.contains('ant-switch-inner') || target.classList.contains('ant-switch-handle') || target.classList.contains('ant-switch')){
+            } else if (target.classList.contains('ant-switch-inner') || target.classList.contains('ant-switch-handle') || target.classList.contains('ant-switch')) {
                 if (target.tagName !== 'BUTTON') target = target.parentNode
                 type = 'switch'
-            }else if(target.classList.contains('ant-input') || target.classList.contains('ant-input-number-input')){
+            } else if (target.classList.contains('ant-input') || target.classList.contains('ant-input-number-input')) {
                 type = 'input'
                 // name = this.resolveInputPlaceholder(target)
-            }else {
+            } else {
                 return false
             }
-            let realPath = this.getDomPath(target)
+            let realPath = basePath + this.getDomPath(target)
             switch (type) {
                 case 'checkbox':
                     realPath += ` .ant-checkbox-input`
@@ -888,7 +939,7 @@ function newRuleForm(tab, rule) {
          * @param target
          * @returns {boolean}
          */
-        resolveElementUIElement(target) {
+        resolveElementUIElement(target, basePath) {
             let type = 'input', name = ''
             if (target.classList.contains('el-checkbox__label') || target.classList.contains('el-checkbox__inner')) {
                 target = target.parentNode.parentNode
@@ -901,7 +952,7 @@ function newRuleForm(tab, rule) {
             } else if (target.classList.contains('el-input__inner') && target.parentNode?.parentNode?.classList.contains('el-select') || target.classList.contains('el-select__tags')) {
                 name = this.resolveInputPlaceholder(target)
                 target = target.parentNode
-                if(!target.classList.contains('el-select__tags')) target = target.parentNode
+                if (!target.classList.contains('el-select__tags')) target = target.parentNode
                 type = 'elSelect'
             } else if (target.classList.contains('el-input__inner') || target.classList.contains('el-textarea__inner')) {
                 type = 'input'
@@ -910,7 +961,7 @@ function newRuleForm(tab, rule) {
             } else {
                 return false
             }
-            let realPath = this.getDomPath(target)
+            let realPath = basePath + this.getDomPath(target)
 
             switch (type) {
                 case 'checkbox':
@@ -943,7 +994,6 @@ function newRuleForm(tab, rule) {
             }
 
 
-
             return true
         }
 
@@ -963,12 +1013,12 @@ function newRuleForm(tab, rule) {
          * @returns {boolean|*}
          */
 
-        checkIsContainer(el) {
+        checkIsContainer(el, basePath) {
             if (el.tagName === 'HTML' || el.tagName === 'BODY') return false
             if (el.tagName === 'DIV' && el.id === this.containerId) {
                 return true
             }
-            if (el.parentNode) return this.checkIsContainer(el.parentNode)
+            if (el.parentNode) return this.checkIsContainer(el.parentNode, basePath)
             return false
 
         }

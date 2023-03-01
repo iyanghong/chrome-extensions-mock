@@ -179,3 +179,9 @@
     top: 0;
     display: none;
 }
+
+.filter-box{
+    width: 100%;
+    margin: 12px auto 0 auto;
+
+}
