@@ -29,14 +29,15 @@ class Mock {
                 let currentRule = this.rules.filter(item => {
 
                     return item.pageUrl.indexOf(this.currentKey) > -1
-                })[0]
-
-                this.realRuleList = currentRule || {pageUrl: '',rules:[]}
-                if (this.realRuleList.rules.length){
+                })
+                // this.currentRule = {pageUrl: this.currentKey,rules:[]}
+                this.realRuleList = currentRule || []
+                this.filterList()
+                if (this.realRuleList.length){
                     document.querySelector('#keyword').style.display = 'block'
                 }
 
-                this.filterList()
+
                 // this.currentRule = currentRule
 
 
@@ -55,9 +56,9 @@ class Mock {
     }
 
     filterList(keyword = '') {
-        this.currentRule = {
-            pageUrl: this.realRuleList.pageUrl,
-            rules: this.realRuleList.rules.filter(item => item.name.indexOf(keyword) > -1)
+        this.currentRule = []
+        for (let item of this.realRuleList){
+            this.currentRule = [...this.currentRule,...item.rules.filter(rule => rule.name.indexOf(keyword) > -1)]
         }
         this.renderRuleUl()
     }
@@ -84,12 +85,13 @@ class Mock {
     }
 
     renderRuleUl() {
-        if (this.currentRule === null) {
+        if (this.currentRule === null || !this.currentRule.length) {
             document.querySelector('#rule-list').innerHTML = `<div class="empty-item">空数据</div>`
         }
         let el = document.querySelector('#rule-list');
         el.innerHTML = ``
-        this.currentRule.rules.forEach((item, index) => {
+        console.log(this.currentRule)
+        this.currentRule.forEach((item, index) => {
             let itemEl = document.createElement('div'),
                 nameEl = document.createElement('span')
             itemEl.classList.add('rule-item')
@@ -107,6 +109,11 @@ class Mock {
             editButton.innerText = '编辑'
             editButton.classList.add('btn-text')
             editButton.addEventListener('click', () => {
+                /*console.log(this.realRuleList)
+                console.log(this.realRuleList)
+                let realItem = this.realRuleList.filter(rItem =>rItem.pageUrl === item.key)[0]
+                console.log(realItem)
+                this.realRuleList = this.realRuleList.filter(rItem =>rItem.pageUrl !== item.key)[0]*/
                 this.handleEditRule(item)
             })
 
@@ -114,13 +121,28 @@ class Mock {
             deleteButton.classList.add('btn-text')
             deleteButton.classList.add('btn-delete')
             deleteButton.addEventListener('click', () => {
-                this.currentRule.rules.splice(index, 1)
-                chrome.runtime.sendMessage('', {
-                    key: 'updateStorageMockRulesByPageRule',
-                    args: [this.currentRule]
-                }).then(() => {
-                    this.renderRuleUl()
+                let realItem = null
+                // console.log(realItem)
+                // realItem.rules = realItem.rules.filter(rItem =>rItem.key !== item.key)
+                this.realRuleList = this.realRuleList.map(rItem => {
+                    if (rItem.pageUrl === item.key){
+                        rItem.rules = rItem.rules.filter(rChildItem => rChildItem.id !== item.id)
+                        realItem = rItem
+                    }
+                    return rItem
                 })
+                console.log(this.realRuleList)
+                console.log(realItem)
+                if (realItem){
+                    chrome.runtime.sendMessage('', {
+                        key: 'updateStorageMockRulesByPageRule',
+                        args: [realItem]
+                    }).then(() => {
+                        this.filterList()
+                        this.renderRuleUl()
+                    })
+                }
+
             })
 
             actionBox.appendChild(editButton)
@@ -179,14 +201,14 @@ function newRuleForm(tab, rule) {
                 this.rule = rule
             } else {
                 this.rule.id = this.getId()
-                let url = currentTab.url
+                /*let url = currentTab.url
                 let pathArray = currentTab.url.split('/');
                 if (pathArray[2]) {
                     let protocol = pathArray[0];
                     let host = pathArray[2];
                     url = protocol + '//' + host;
-                }
-                this.rule.key = url
+                }*/
+                this.rule.key = currentTab.url
             }
             this.rule.title = currentTab.title
             this.render()
