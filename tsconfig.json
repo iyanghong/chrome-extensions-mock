@@ -18,7 +18,9 @@
       "plugins/*": ["src/plugins/*"],
       "store/*": ["src/store/*"]
     },
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": false,
+    "allowJs": true
   },
   "types": ["vite/client", "element-plus/global", "pinia-plugin-persist"],
   "skipLibCheck": true,
