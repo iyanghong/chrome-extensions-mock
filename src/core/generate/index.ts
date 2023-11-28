@@ -122,6 +122,4 @@ class Mock {
 }
 
 
-const MOCK_LIST: MockItemType[] = []
-
-export default MOCK_LIST
+export default Mock
