@@ -1,4 +1,4 @@
-interface MockItemType {
+export interface MockItemType {
     //唯一标识
     key: string
     // 说明
@@ -13,7 +13,7 @@ interface MockItemType {
     getPlaceholder(): string
 }
 
-interface MockListType {
+export interface MockListType {
     [key: string]: MockItemType
 }
 
