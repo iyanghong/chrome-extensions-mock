@@ -1,0 +1,21 @@
+{
+  "semi": true,
+  "endOfLine": "auto",
+  "singleQuote": true,
+  "trailingComma": "none",
+  "bracketSpacing": true,
+  "jsxBracketSameLine": false,
+  "vueIndentScriptAndStyle": false,
+  "jsxBracketSameLine:": true,
+  "htmlWhitespaceSensitivity": "ignore",
+  "wrapAttributes": true,
+  "indent": ["error","tab"],
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "html"
+      }
+    }
+  ]
+}
