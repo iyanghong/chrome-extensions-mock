@@ -1,16 +1,14 @@
 import {MockItemType, MockListType} from "@/core/generate/types";
 import mock from "./lib/mock.js";
-import idioms from "./lib/idiom.js";
 import Region from "./lib/region.js";
 import network from "./lib/network.js";
+import base from "@/core/generate/lib/base";
 
 
-function createMockItem(key: string, comment: string, handle: Function, params: string[] = []): MockItemType {
-
+function createMockItem(key: string, comment: string, handle: (...params: any[]) => any, params: string[] = []): MockItemType {
     return {
         key,
         comment,
-        // @ts-ignore
         handle: handle,
         params,
         getPlaceholder(): string {
@@ -32,10 +30,8 @@ const DefaultMockList: MockListType = {
     landline: createMockItem('landline', '电话号码-座机', mock.cn.phone),
     email: createMockItem('email', '邮箱', mock.web.email),
     uuid: createMockItem('uuid', 'UUID', mock.util.uuid),
-    idioms: createMockItem('idioms', '成语', () => {
-        let index = Math.round(Math.random() * idioms.length);
-        return idioms[index]
-    }),
+    idioms: createMockItem('idioms', '成语(指定数量)', base.idioms, ['num = 1', "separator = ''"]),
+    idiomsPlus: createMockItem('idiomsPlus', '成语(随机区间数量)', base.idioms, ['minNum = 1', 'maxNum = 10', "separator = ''"]),
     fullAddress: createMockItem('fullAddress', '详细地址', function () {
         let region = new Region();
         return region.province(true) + region.prefecture(true) + region.county()
@@ -70,7 +66,7 @@ const DefaultMockList: MockListType = {
     }),
     company: createMockItem('company', '公司名', mock.cn.company),
     build: createMockItem('build', '建筑名', mock.cn.build),
-    road: createMockItem('build', '路名', mock.cn.road),
+    road: createMockItem('road', '路名', mock.cn.road),
     cartCard: createMockItem('cartCard', '车牌号', mock.cn.autocard),
     nickname: createMockItem('nickname', '昵称', network.nickname),
     personDescription: createMockItem('personDescription', '个性签名', network.personDescription),
@@ -83,6 +79,13 @@ const DefaultMockList: MockListType = {
     ipLan: createMockItem('ipLan', '局域网IP', () => mock.web.ip(true)),
     bankIdCard: createMockItem('bankIdCard', '银行卡号', network.bankIdCard),
     colorHex: createMockItem('colorHex', '十六进制颜色值', mock.web.color),
+    string: createMockItem('string', '随机字符串(指定长度)', base.string, ['length']),
+    stringPlus: createMockItem('stringPlus', '随机字符串(区间随机长度)', base.stringPlus, ['minLength = 1', 'maxLength = 10']),
+    number: createMockItem('number', '随机数字(区间随机大小)', base.number, ['minLength = 1', 'maxLength = 10']),
+    numberPlus: createMockItem('stringPlus', '随机数字（区间随机长度、区间随机大小）', base.numberPlus, ['minLength = 1', 'maxLength = 10', 'minNumber = 0', 'maxNumber = 1000']),
+    date: createMockItem('date', '日期(区间随机)', base.date, ['diffStart = 0', 'diffEnd = 10']),
+    chinese: createMockItem('chinese', '随机汉字(指定长度)', base.chineseText, ['length = 10']),
+    chinesePlus: createMockItem('chinesePlus', '随机汉字(区间随机长度)', base.chineseText, ['minLength = 1', 'maxLength = 10']),
 }
 
 class Mock {

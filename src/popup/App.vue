@@ -1,6 +1,10 @@
 <template>
   <n-el class='popup-container'>
     <n-el>当前页面：<n-text>{{ currentTab.title }}</n-text></n-el>
+    <n-space justify="center" class="action-panel">
+      <n-button type="primary" size="small">管理</n-button>
+      <n-button type="primary" size="small" @click="handleCreate">创建</n-button>
+    </n-space>
     <n-tabs v-model:value='activeTab' justify-content="space-evenly">
       <n-tab-pane tab='全部' name='All'>
 
@@ -15,9 +19,9 @@
 </template>
 <script setup lang='ts'>
 
-import { useCurrentTab } from '@/utils/ChromeUtil';
-import { onMounted, ref } from 'vue';
-import {NTabs,NTabPane} from 'naive-ui'
+import {useCurrentTab} from '@/utils/ChromeUtil';
+import {onMounted, ref} from 'vue';
+import {NTabPane, NTabs} from 'naive-ui'
 
 const currentTab = ref<chrome.tabs.Tab>({} as chrome.tabs.Tab);
 const activeTab = ref<'All' | 'Current'>('All');
@@ -27,6 +31,28 @@ onMounted(async () => {
   currentTab.value = await useCurrentTab();
 });
 
+function execFunc(id: string = '') {
+  // let src = chrome.runtime.getURL('static/js/content.min.js')
+  let src = chrome.runtime.getURL('static/js/content.min.js')
+  const container = document.createElement('div');
+  container.setAttribute('id', 'chrome-extension-mock-2.0')
+  const sc = document.createElement('script');
+  sc.setAttribute('type', 'text/javascript');
+  sc.src = src
+  container.append(sc)
+  document.body.append(container)
+}
+
+
+async function handleCreate() {
+  if (!currentTab.value || currentTab.value.id === undefined) return
+  await chrome.scripting.executeScript({
+    target: {tabId: currentTab.value.id},
+    func: execFunc,
+    args: ['']
+    // files:['static/js/content.min.js']
+  })
+}
 
 </script>
 
@@ -40,5 +66,9 @@ onMounted(async () => {
 .popup-container {
   width: 200px;
   height: 300px;
+}
+
+:deep( .action-panel .n-button .n-button__content) {
+  padding: 0 10px;
 }
 </style>

@@ -51,28 +51,22 @@ export default ({ mode, command }) => {
       "module": "es6"
     },
     build: {
-      modulePreload:false,
       outDir: '../dist',
-      emptyOutDir: false,
-      cssCodeSplit: false,
-      sourcemap: false,
-      minify:'esbuild',
-      /*lib: {
+      emptyOutDir: true,
+      cssCodeSplit: true,
+      sourcemap: true,
+      lib: {
         entry: resolve(__dirname, './src/content/main.ts'),
         name: 'ChromeExtensionMock2', // umd的变量名
-        fileName: (format) => `/static/js/content.${format}.js`, // 输出文件名
+        fileName: (format) => `static/js/content.${format}.js`, // 输出文件名
         formats: ['es'],
-      },*/
+      },
       rollupOptions: {
-        input: {
-          content: resolve(__dirname, './src/content/main.ts'),
-          main: resolve(__dirname, './src/index.html'),
-          options: resolve(__dirname, './src/options.html')
-        },
+        // input:resolve(__dirname, './src/content/main.ts'),
         output: {
-          chunkFileNames: 'static/js/[name]-[hash].js',
-          entryFileNames: 'static/js/[name].min.js',
-          assetFileNames: 'static/[ext]/name-[hash].[ext]',
+          // entryFileNames: 'static/js/[name].min.js',
+          // inlineDynamicImports:false,
+          // format: 'es'
         },
 
       }

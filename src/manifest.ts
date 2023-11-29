@@ -34,17 +34,19 @@ const manifest = {
     ids: ['*']
   },
   permissions: ['storage', 'activeTab', 'scripting', 'tabs'],
+  host_permissions: ['*://*/*'],
   background: {
     service_worker: './background.ts',
     type: 'module'
   },
-  // content_scripts: [
-  //  {
-  //  matches: ['http://*/*', 'https://*/*', '<all_urls>'],
-  // js: ['background.ts']
-  // css: ['content.styles.css']
-  //  }
-  // ],
+  content_scripts: [
+    {
+      matches: ['<all_urls>'],
+      run_at: "document_idle"
+      // js: ['dist/static/js/content.min.js'],
+      // css: ['content.styles.css']
+    }
+  ],
   commands: {
     _execute_action: {
       suggested_key: {

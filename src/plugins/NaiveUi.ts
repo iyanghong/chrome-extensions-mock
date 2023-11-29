@@ -1,8 +1,22 @@
-import { App, Plugin } from '@vue/runtime-core';
-import {NEl,NSpace,NText,NInput}from 'naive-ui'
+import {App} from '@vue/runtime-core';
+import {
+  NButton,
+  NEl,
+  NInput,
+  NSpace,
+  NTabPane,
+  NTabs,
+  NText
+} from 'naive-ui'
 
 const Components:any = {
-  NEl,NSpace,NText,NInput
+  NEl,
+  NSpace,
+  NText,
+  NInput,
+  NButton,
+  NTabs,
+  NTabPane
 }
 
 

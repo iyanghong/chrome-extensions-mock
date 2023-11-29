@@ -64,6 +64,7 @@ initializeProvider({
   logger: log,
   shouldShimWeb3: true
 });
+// @ts-ignore
 const { ethereum } = window as any;
 console.log(ethereum);
 // }

@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vue-tsc && vite build",
     "watch": "vue-tsc && vite build --watch",
+    "watch:content": "vue-tsc && vite build --config vite.config.content.ts --watch",
     "preview": "vite preview"
   },
   "dependencies": {
