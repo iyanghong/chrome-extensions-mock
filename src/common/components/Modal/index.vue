@@ -1,5 +1,5 @@
 <template>
-  <n-card :id="modalId" class="chrome-extensions-mock-modal" closable @close="handleClose">
+  <n-card :id="modalId" class="chrome-extensions-mock-modal" closable @close="handleClose" :style="modalStyle">
     <template #header>
       <slot name="header">
         <n-el :id="modalId + '-bar'" class="chrome-extensions-mock-modal-header cursor-move">
@@ -13,8 +13,7 @@
 
 <script setup lang="ts">
 
-import {nextTick, onMounted} from "vue";
-import startDrag from "@/common/utils/drag";
+import {nextTick, onMounted, ref} from "vue";
 import {EventListener} from "@/common/utils/DomUtils";
 
 const emit = defineEmits(['close'])
@@ -22,12 +21,22 @@ const props = defineProps({
   title: {
     type: String,
     default: () => ''
+  },
+  width: {
+    type: [String, Number],
+    default: () => ''
+  },
+  height: {
+    type: [String, Number],
+    default: () => ''
   }
 })
-
-
 const modalId = `chrome-extensions-mock-modal-${new Date().getTime()}`
+const modalStyle = ref<Record<string, any>>({})
+
 onMounted(() => {
+  if (props.width) modalStyle.value.width = props.width
+  if (props.height) modalStyle.value.height = props.height
   nextTick(() => {
     const oBox = document.getElementById(modalId);
     const oBar = document.getElementById(`${modalId}-bar`);
