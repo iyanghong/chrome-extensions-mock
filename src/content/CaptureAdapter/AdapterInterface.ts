@@ -8,8 +8,8 @@ export interface AdapterResolveItem {
 
 export default interface AdapterInterface{
   adapterName: string
-  input: (target: Element, basePath: string) => (AdapterResolveItem | undefined)
-  select: (target: Element, basePath: string) => (AdapterResolveItem | undefined)
-  radio: (target: Element, basePath: string) => (AdapterResolveItem | undefined)
-  checkbox: (target: Element, basePath: string) => (AdapterResolveItem | undefined)
+  input: (target: EventTarget | Element | Document, basePath: string) => (AdapterResolveItem | undefined)
+  select: (target: EventTarget | Element | Document, basePath: string) => (AdapterResolveItem | undefined)
+  radio: (target: EventTarget | Element | Document, basePath: string) => (AdapterResolveItem | undefined)
+  checkbox: (target: EventTarget | Element | Document, basePath: string) => (AdapterResolveItem | undefined)
 }

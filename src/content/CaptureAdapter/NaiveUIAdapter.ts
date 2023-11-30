@@ -3,19 +3,19 @@ import AdapterInterface, {AdapterResolveItem} from "@/content/CaptureAdapter/Ada
 export default class NaiveUIAdapter implements AdapterInterface {
     adapterName = 'NaiveUI';
 
-    checkbox(target: Element, basePath: string): AdapterResolveItem | undefined {
+    checkbox(target: EventTarget | Element | Document, basePath: string): AdapterResolveItem | undefined {
         return undefined;
     }
 
-    input(target: Element, basePath: string): AdapterResolveItem | undefined {
+    input(target: EventTarget | Element | Document, basePath: string): AdapterResolveItem | undefined {
         return undefined;
     }
 
-    radio(target: Element, basePath: string): AdapterResolveItem | undefined {
+    radio(target: EventTarget | Element | Document, basePath: string): AdapterResolveItem | undefined {
         return undefined;
     }
 
-    select(target: Element, basePath: string): AdapterResolveItem | undefined {
+    select(target: EventTarget | Element | Document, basePath: string): AdapterResolveItem | undefined {
         return undefined;
     }
 
