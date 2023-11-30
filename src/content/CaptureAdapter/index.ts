@@ -61,7 +61,8 @@ export default class CaptureAdapter {
     this.events.value.push(EventListener.listen(target, 'mousedown', e => {
       if (e.target) {
         //@ts-ignore
-        this.resolve(e.target, basePath);
+        const result = this.resolve(e.target, basePath);
+        console.log('result = ', result);
       }
     }));
   }
