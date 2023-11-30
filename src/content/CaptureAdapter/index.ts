@@ -27,7 +27,7 @@ export default class CaptureAdapter {
     this.adapterList.push(adapter);
   }
 
-  resolve(target: EventTarget | Element | Document, basePath: string): AdapterResolveItem | undefined {
+  resolve(target: Element, basePath: string): AdapterResolveItem | undefined {
     if (this.checkIsContainer(target, basePath)) return undefined;
     console.log('target => ', target);
     for (const adapter of this.adapterList) {
@@ -60,6 +60,7 @@ export default class CaptureAdapter {
   monitor(target: EventTarget | Element | Document, basePath: string = '') {
     this.events.value.push(EventListener.listen(target, 'mousedown', e => {
       if (e.target) {
+        //@ts-ignore
         this.resolve(e.target, basePath);
       }
     }));
