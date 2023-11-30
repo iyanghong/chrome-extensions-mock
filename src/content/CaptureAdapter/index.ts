@@ -44,6 +44,10 @@ export default class CaptureAdapter {
       result = adapter.input(target, basePath);
       if (result) return result;
 
+
+      result = adapter.switch(target, basePath);
+      if (result) return result;
+
     }
     return undefined;
   }
