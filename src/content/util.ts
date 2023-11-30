@@ -1,10 +1,17 @@
 import {MessageRequestEntity} from "@/common/entitys/MessageType";
-import {getCurrentInstance} from "vue";
+import { getCurrentInstance, ref, Ref } from 'vue';
+import { EventListenerType } from '@/common/utils/DomUtils';
 
 export function getContainerId() {
     const vm = getCurrentInstance()
     return vm?.appContext.config.globalProperties.$containerId || ''
 }
+
+export function getGlobalEvents():Ref<({remove:() => void} | undefined)[]>{
+    const vm = getCurrentInstance()
+    return (vm?.appContext.config.globalProperties.$events || ref<({remove:() => void} | undefined)[]>([])) as Ref<({remove:() => void} | undefined)[]>
+}
+
 
 export function sendMessage(message: MessageRequestEntity) {
     return new Promise<void>(resolve => {
