@@ -40,8 +40,6 @@ onMounted(() => {
   nextTick(() => {
     const oBox = document.getElementById(modalId);
     const oBar = document.getElementById(`${modalId}-bar`);
-    console.log(oBox)
-    console.log(oBar)
     //@ts-ignore
     handleDrag(oBox,oBar);
   });

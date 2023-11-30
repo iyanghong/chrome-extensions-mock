@@ -151,8 +151,10 @@ export function once(el: HTMLElement, event: string, fn: EventListener): void {
   };
   on(el, event, listener);
 }
-
-export const EventListener = {
+export interface EventListenerType  {
+  listen: (target:EventTarget|Element|Document, eventType: string, callback: EventListenerOrEventListenerObject) => ({remove:() => void} | undefined)
+}
+export const EventListener:EventListenerType = {
   /**
    * Listen to DOM events during the bubble phase.
    *
