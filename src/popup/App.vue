@@ -19,7 +19,7 @@
 </template>
 <script setup lang='ts'>
 
-import {useCurrentTab} from '@/utils/ChromeUtil';
+import {useCurrentTab} from '@/common/utils/ChromeUtil';
 import {onMounted, ref} from 'vue';
 import {NTabPane, NTabs} from 'naive-ui'
 

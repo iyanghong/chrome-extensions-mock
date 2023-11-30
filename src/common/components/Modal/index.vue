@@ -11,7 +11,7 @@
 <script setup lang="ts">
 
 import {nextTick, ref} from "vue";
-import startDrag from "@/utils/drag";
+import startDrag from "@/common/utils/drag";
 
 const visible = ref<boolean>(false)
 

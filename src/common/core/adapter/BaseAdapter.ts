@@ -1,4 +1,4 @@
-import AdapterInterface from '@/core/adapter/AdapterInterface';
+import AdapterInterface from '@/common/core/adapter/AdapterInterface';
 
 export default class BaseAdapter implements AdapterInterface{
     constructor() {

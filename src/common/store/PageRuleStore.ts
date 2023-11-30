@@ -1,5 +1,5 @@
-import {PageEntity, PageRuleItemEntity} from "@/entitys/PageEntity";
-import {getStorage, setStorage} from "@/utils/cache";
+import {PageEntity, PageRuleItemEntity} from "../entitys/PageEntity";
+import {getStorage, setStorage} from "../utils/cache";
 const PAGE_RULE_CACHE_KEY = 'PageRule'
 
 interface PageRuleDataEntity {

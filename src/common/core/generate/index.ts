@@ -1,8 +1,8 @@
-import {MockItemType, MockListType} from "@/core/generate/types";
+import {MockItemType, MockListType} from "@/common/core/generate/types";
 import mock from "./lib/mock.js";
 import Region from "./lib/region.js";
 import network from "./lib/network.js";
-import base from "@/core/generate/lib/base";
+import base from "@/common/core/generate/lib/base";
 
 
 function createMockItem(key: string, comment: string, handle: (...params: any[]) => any, params: string[] = []): MockItemType {

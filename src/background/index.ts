@@ -1,4 +1,4 @@
-import PageRuleStoreService from './store/PageRuleStore';
+import PageRuleStoreService from '@/common/store/PageRuleStore';
 
 const PageRuleStore = new PageRuleStoreService()
 
