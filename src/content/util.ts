@@ -1,6 +1,10 @@
 import {MessageRequestEntity} from "@/common/entitys/MessageType";
 import {getCurrentInstance} from "vue";
 
+export function getContainerId() {
+    const vm = getCurrentInstance()
+    return vm?.appContext.config.globalProperties.$containerId || ''
+}
 
 export function sendMessage(message: MessageRequestEntity) {
     return new Promise<void>(resolve => {

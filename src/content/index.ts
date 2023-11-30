@@ -13,6 +13,7 @@ import NaiveUi from '../plugins/NaiveUi';
         document.body.append(container)
         const app = createApp(App)  // 演示如何向组件中传值
         app.config.globalProperties.$sendMessage = handler.sendMessage
+        app.config.globalProperties.$containerId = containerId
         app.config.globalProperties.$handleDestroy = () => {
             document.body.removeChild(container)
         }

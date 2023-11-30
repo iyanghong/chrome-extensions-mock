@@ -1,7 +1,7 @@
 {
-  "name": "chrome-plugin",
+  "name": "chrome-extensions-mock",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "build": "npm run build:popup && npm run build:options && npm run build:content && npm run build:background",
@@ -23,6 +23,7 @@
     "loglevel": "^1.8.1",
     "metamask-extension-provider": "^3.0.0",
     "post-message-stream": "^3.0.0",
+    "sass": "^1.69.5",
     "vue": "^3.2.47"
   },
   "devDependencies": {

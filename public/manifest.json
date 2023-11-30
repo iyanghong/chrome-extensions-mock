@@ -48,7 +48,8 @@
       "run_at": "document_idle",
       "js": [
         "content/index.js"
-      ]
+      ],
+      "css": ["content/style.css"]
     }
   ],
   "action": {
