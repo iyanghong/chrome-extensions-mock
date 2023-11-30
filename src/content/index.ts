@@ -1,7 +1,8 @@
 import Handler from "@/common/core/handler";
-import {createApp} from 'vue'
+import { createApp, ref } from 'vue';
 import App from './App.vue'
 import NaiveUi from '../plugins/NaiveUi';
+import { EventListenerType } from '@/common/utils/DomUtils';
 
 (() => {
     const handler = new Handler('Content')
@@ -12,6 +13,7 @@ import NaiveUi from '../plugins/NaiveUi';
         container.setAttribute('id', containerId)
         document.body.append(container)
         const app = createApp(App)  // 演示如何向组件中传值
+        app.config.globalProperties.$events = ref<EventListenerType[]>([])
         app.config.globalProperties.$sendMessage = handler.sendMessage
         app.config.globalProperties.$containerId = containerId
         app.config.globalProperties.$handleDestroy = () => {
