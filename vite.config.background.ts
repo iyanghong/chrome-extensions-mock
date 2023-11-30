@@ -27,6 +27,9 @@ export default ({mode, command}) => {
         to: '../dist'
       }])
     ],
+    define: {
+      'process.env': {}
+    },
     resolve: {
       alias: {
         '@': resolve(__dirname, 'src')
@@ -38,7 +41,7 @@ export default ({mode, command}) => {
       lib: {
         entry: resolve(__dirname, 'src/background/index.ts'),
         // 设置生成文件的文件名
-        fileName: (format) => `index.js`, // 输出文件名
+        fileName: () => `index.js`, // 输出文件名
         formats: ['es'],
       },
     },

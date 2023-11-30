@@ -2,11 +2,13 @@ import {App} from '@vue/runtime-core';
 import {
   NButton,
   NEl,
+  NH3,
   NInput,
   NSpace,
   NTabPane,
   NTabs,
-  NText
+  NText,
+    NModal,
 } from 'naive-ui'
 
 const Components:any = {
@@ -16,7 +18,9 @@ const Components:any = {
   NInput,
   NButton,
   NTabs,
-  NTabPane
+  NTabPane,
+  NH3,
+  NModal,
 }
 
 
