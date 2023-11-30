@@ -96,9 +96,9 @@ export default class ElementUiAdapter implements AdapterInterface {
     let type = 'switch';
     return {
       name,
-      mockKey: '',
+      mockKey: type,
       adapter: this.adapterName,
-      mockName: '',
+      mockName: getFormItemTypeText(type) + '随机',
       realPath: realPath,
       tagName: target.tagName,
       type: type
