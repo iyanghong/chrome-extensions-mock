@@ -37,7 +37,7 @@ export default class ElementUiAdapter implements AdapterInterface {
 
   input(target: Element, basePath: string): AdapterResolveItem | undefined {
     if (!target.classList.contains('el-input__inner') && !target.classList.contains('el-textarea__inner')) return undefined;
-    let realPath = basePath + getDomPath(target) + ' .el-radio__original';
+    let realPath = basePath + getDomPath(target);
     let name = getInputPlaceholder(target) || this.getFormItemLabel(target);
     let type = 'radio';
     return {
@@ -83,6 +83,22 @@ export default class ElementUiAdapter implements AdapterInterface {
       mockKey: type,
       adapter: this.adapterName,
       mockName: getFormItemTypeText(type) + '随机',
+      realPath: realPath,
+      tagName: target.tagName,
+      type: type
+    };
+  }
+
+  switch(target: Element, basePath: string): AdapterResolveItem | undefined {
+    if (!target.classList.contains('el-switch__core')) return undefined;
+    let realPath = basePath + getDomPath(target);
+    let name = getInputPlaceholder(target) || this.getFormItemLabel(target);
+    let type = 'switch';
+    return {
+      name,
+      mockKey: '',
+      adapter: this.adapterName,
+      mockName: '',
       realPath: realPath,
       tagName: target.tagName,
       type: type

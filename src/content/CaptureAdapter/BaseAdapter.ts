@@ -19,6 +19,10 @@ export default class BaseAdapter implements AdapterInterface{
         return undefined;
     }
 
+    switch(target: Element, basePath: string): AdapterResolveItem | undefined {
+        return undefined;
+    }
+
 
 
 

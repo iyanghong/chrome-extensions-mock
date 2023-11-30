@@ -19,4 +19,8 @@ export default class MiniUIAdapter implements AdapterInterface {
         return undefined;
     }
 
+    switch(target: Element, basePath: string): AdapterResolveItem | undefined {
+        return undefined;
+    }
+
 }

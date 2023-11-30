@@ -21,4 +21,5 @@ export default interface AdapterInterface {
   select: (target: Element, basePath: string) => (AdapterResolveItem | undefined);
   radio: (target: Element, basePath: string) => (AdapterResolveItem | undefined);
   checkbox: (target: Element, basePath: string) => (AdapterResolveItem | undefined);
+  switch: (target: Element, basePath: string) => (AdapterResolveItem | undefined);
 }
