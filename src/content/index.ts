@@ -9,6 +9,7 @@ import {RuleEntity} from "@/common/entitys/PageEntity";
     const handler = new Handler('Content')
 
     handler.on('OpenPageRuleFrom', request => {
+        console.log('request',request)
         let ruleData: RuleEntity = request.data
         if (!ruleData.id) {
             ruleData = {

@@ -1,5 +1,5 @@
 import {App} from '@vue/runtime-core';
-import {NButton, NEl, NH3, NInput, NModal, NSpace, NTabPane, NTabs, NText,NCard,} from 'naive-ui'
+import {NButton, NEl, NH3, NInput, NModal, NSpace, NTabPane, NTabs, NText, NCard, NDataTable,} from 'naive-ui'
 
 const Components:any = {
   NEl,
@@ -12,6 +12,7 @@ const Components:any = {
   NH3,
   NModal,
   NCard,
+  NDataTable
 }
 
 

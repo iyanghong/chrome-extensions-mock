@@ -7,10 +7,20 @@
     </n-space>
     <n-tabs v-model:value='activeTab' justify-content="space-evenly">
       <n-tab-pane tab='全部' name='All'>
-        <Rule v-for="item in originRules" :key="item.id" :data="item"></Rule>
+        <n-data-table
+            :columns="columns"
+            :data="originRules"
+            :style="{ height: `300px` }"
+            flex-height
+        />
       </n-tab-pane>
       <n-tab-pane tab='当前页' name='Current'>
-        <Rule v-for="item in urlRules" :key="item.id" :data="item"></Rule>
+        <n-data-table
+            :columns="columns"
+            :data="originRules"
+            :style="{ height: `300px` }"
+            flex-height
+        />
       </n-tab-pane>
     </n-tabs>
   </n-el>
@@ -20,10 +30,9 @@
 <script setup lang='ts'>
 
 import {useCurrentTab} from '@/common/utils/ChromeUtil';
-import {computed, onMounted, ref} from 'vue';
-import {NTabPane, NTabs} from 'naive-ui'
+import {computed, h, onMounted, ref} from 'vue';
+import {DataTableColumns, NButton, NSpace, NTabPane, NTabs} from 'naive-ui'
 import Handler from "@/common/core/handler";
-import Rule from './Rule.vue'
 import {RuleEntity} from "@/common/entitys/PageEntity";
 
 const handler = new Handler('Popup')
@@ -40,6 +49,36 @@ const urlRules = computed(() => {
   return originRules.value.filter(rule => rule.url == url.value)
 })
 
+
+let columns: DataTableColumns<RuleEntity> = [
+  {
+    key: 'name',
+    render: (row: RuleEntity) => {
+      return h(NSpace, {justify: "space-between", wrap: false, align: "center"}, {
+        default: () => [
+          h(NButton, {style: "width:100px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;"}, {default: () => row.name}),
+          h(NSpace, {justify: "space-between", wrap: false, align: "center"}, {
+            default: () => [
+              h(NButton, {
+                size: 'small',
+                text: true,
+                type: 'primary',
+                onClick: () => handleCreate(row.id)
+              }, {default: () => '编辑'}),
+              h(NButton, {
+                size: 'small',
+                text: true,
+                type: 'error',
+                onClick: () => handleDelete(row.id)
+              }, {default: () => '删除'}),
+            ]
+          })
+        ]
+      })
+    }
+  }
+]
+
 onMounted(async () => {
   currentTab.value = await useCurrentTab();
   url.value = currentTab.value.url || ''
@@ -49,17 +88,21 @@ onMounted(async () => {
     let host = pathArray[2];
     origin.value = protocol + '//' + host;
   }
-  handler.sendMessage({
-    source:'Popup',
-    target:'Background',
-    data:origin.value,
-    handler:'GetOriginRules'
-  }).then(response => {
-    originRules.value = response
-  })
+  loadData()
 
 });
 
+function loadData() {
+  console.log('origin.value', origin.value)
+  handler.sendMessage({
+    source: 'Popup',
+    target: 'Background',
+    data: origin.value,
+    handler: 'GetOriginRules'
+  }).then(response => {
+    originRules.value = response
+  })
+}
 
 
 async function handleCreate(id: string = '') {
@@ -73,6 +116,17 @@ async function handleCreate(id: string = '') {
       tabId: currentTab.value.id
     }
   })
+}
+
+async function handleDelete(id: string) {
+  if (!id) return false
+  await handler.sendMessage({
+    source: 'Popup',
+    target: 'Background',
+    data: id,
+    handler: 'DeleteRule'
+  })
+  loadData()
 }
 
 </script>
