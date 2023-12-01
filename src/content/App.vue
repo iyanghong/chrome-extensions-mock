@@ -3,9 +3,9 @@
 </template>
 <script setup lang="ts">
 import PageRuleForm from "./PageRuleForm.vue";
-import {sendMessageToBackground} from "@/content/util";
+// import {getGlobalProperties} from "@/content/store";
+import {getCurrentInstance} from "vue";
 
-sendMessageToBackground('SavePageRule', {id: '123'})
 
 </script>
 <style scoped>

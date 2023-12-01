@@ -1,24 +1,30 @@
-import AdapterInterface, { AdapterResolveItem } from '@/content/CaptureAdapter/AdapterInterface';
+import AdapterInterface, {AdapterResolveItem} from '@/content/CaptureAdapter/AdapterInterface';
 import BaseAdapter from '@/content/CaptureAdapter/BaseAdapter';
 import ElementUiAdapter from '@/content/CaptureAdapter/ElementUiAdapter';
 import AntdDesignAdapter from '@/content/CaptureAdapter/AntdDesignAdapter';
 import NaiveUIAdapter from '@/content/CaptureAdapter/NaiveUIAdapter';
 import MiniUIAdapter from '@/content/CaptureAdapter/MiniUIAdapter';
-import { getContainerId, getGlobalEvents } from '@/content/util';
-import { EventListener } from '@/common/utils/DomUtils';
+import {EventListener} from '@/common/utils/DomUtils';
+import getUUID from "@/common/utils";
+import {IGlobalProperties} from "@/content/GlobalProperties";
+import {Ref} from "vue";
+import {RuleEntity} from "@/common/entitys/PageEntity";
 
 export default class CaptureAdapter {
   adapterList: AdapterInterface[] = [];
   containerId = '';
-  events = getGlobalEvents();
+  events: Ref<({ remove: () => void } | undefined)[]>
+  ruleData: Ref<RuleEntity>
 
-  constructor() {
+  constructor(globalProperties: IGlobalProperties) {
     this.registerAdapter(new ElementUiAdapter());
     this.registerAdapter(new AntdDesignAdapter());
     this.registerAdapter(new NaiveUIAdapter());
     this.registerAdapter(new MiniUIAdapter());
     this.registerAdapter(new BaseAdapter());
-    this.containerId = getContainerId();
+    this.events = globalProperties.getEvents()
+    this.ruleData = globalProperties.getRuleData()
+    this.containerId = globalProperties.getContainerId();
   }
 
   registerAdapter(adapter: AdapterInterface) {
@@ -62,11 +68,25 @@ export default class CaptureAdapter {
   }
 
   monitor(target: EventTarget | Element | Document, basePath: string = '') {
+
     this.events.value.push(EventListener.listen(target, 'mousedown', e => {
       if (e.target) {
         //@ts-ignore
         const result = this.resolve(e.target, basePath);
-        console.log('result = ', result);
+        if (result && !this.ruleData.value.ruleItems.filter(it => it.realPath == result.realPath)[0]) {
+          this.ruleData.value.ruleItems.push({
+            adapter: result.adapter,
+            id: getUUID(),
+            mockKey: result.mockKey,
+            mockName: result.mockName,
+            name: result.name,
+            order: 0,
+            realPath: result.realPath,
+            tagName: result.tagName,
+            type: result.type
+
+          })
+        }
       }
     }));
   }
