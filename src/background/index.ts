@@ -24,7 +24,7 @@ chrome.runtime.onInstalled.addListener( async () => {
         if (request.target && EventHandler[request.target] && EventHandler[request.target][request.handler]) {
             (async () => {
                 console.log(`执行事件，source=${request.source}，target=${request.target}，handler=${request.handler}`, request.data)
-                const response = await EventHandler[request.target][request.handler](null, request.data)
+                const response = await EventHandler[request.target][request.handler].call(null, request.data)
                 sendResponse(response)
             })()
         }
