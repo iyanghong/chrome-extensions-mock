@@ -15,6 +15,7 @@
 
 import {nextTick, onMounted, ref} from "vue";
 import {EventListener} from "@/common/utils/DomUtils";
+import getUUID from "@/common/utils";
 
 const emit = defineEmits(['close'])
 const props = defineProps({
@@ -31,7 +32,7 @@ const props = defineProps({
     default: () => ''
   }
 })
-const modalId = `chrome-extensions-mock-modal-${new Date().getTime()}`
+const modalId = `chrome-extensions-mock-modal-${getUUID()}`
 const modalStyle = ref<Record<string, any>>({})
 
 onMounted(() => {

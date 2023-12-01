@@ -1,14 +1,14 @@
 import Handler from "@/common/core/handler";
-import { createApp, Ref, ref } from 'vue';
+import {createApp, Ref, ref} from 'vue';
 import App from './App.vue'
 import NaiveUi from '../plugins/NaiveUi';
-import { EventListenerType } from '@/common/utils/DomUtils';
+import getUUID from "@/common/utils";
 
 (() => {
     const handler = new Handler('Content')
 
     handler.on('OpenPageRuleFrom', request => {
-        let containerId = `ChromeExtensionsMockContainer-${new Date().getTime()}`
+        let containerId = `ChromeExtensionsMockContainer_${getUUID()}`
         const container = document.createElement('div');
         container.setAttribute('id', containerId)
         document.body.append(container)
