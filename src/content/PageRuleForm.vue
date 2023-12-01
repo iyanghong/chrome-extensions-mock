@@ -32,7 +32,6 @@ const globalProperties: IGlobalProperties = new GlobalProperties(getCurrentInsta
 
 const captureAdapter = new CaptureAdapter(globalProperties);
 const ruleData = globalProperties.getRuleData()
-console.log('ruleData', ruleData)
 
 
 function handleSave() {

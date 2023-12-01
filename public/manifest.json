@@ -15,11 +15,14 @@
     ]
   },
   "permissions": [
-    "storage",
+    "contextMenus",
+    "scripting",
+    "tabs",
+    "history",
     "declarativeContent",
     "activeTab",
-    "scripting",
-    "tabs"
+    "storage",
+    "notifications"
   ],
   "host_permissions": ["*://*/*"],
   "web_accessible_resources": [

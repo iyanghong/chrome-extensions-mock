@@ -1,7 +1,11 @@
 import {MessageRequestEntity, MessageRequestSourceType} from "@/common/entitys/MessageType";
 
+export interface IHandler {
+    on: (key: string, callback: (response: MessageRequestEntity) => void) => void
+    sendMessage: (message: MessageRequestEntity) => Promise<any>
+}
 
-export default class Handler {
+export default class Handler implements IHandler {
     source: MessageRequestSourceType
 
     constructor(source: MessageRequestSourceType) {

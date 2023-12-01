@@ -1,10 +1,14 @@
-import {PageEntity, RuleEntity} from "../entitys/PageEntity";
+import {RuleEntity} from "../entitys/PageEntity";
 import {getStorage, setStorage} from "../utils/cache";
 
 const PAGE_RULE_CACHE_KEY = 'PageRule'
 
 export default class PageRuleStore{
     rules: RuleEntity[] = []
+
+    constructor() {
+        this.refreshData().then()
+    }
 
     async doCache() {
         await setStorage(PAGE_RULE_CACHE_KEY, this.rules)

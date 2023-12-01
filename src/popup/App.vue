@@ -7,10 +7,10 @@
     </n-space>
     <n-tabs v-model:value='activeTab' justify-content="space-evenly">
       <n-tab-pane tab='全部' name='All'>
-
+        <Rule v-for="item in originRules" :key="item.id" :data="item"></Rule>
       </n-tab-pane>
       <n-tab-pane tab='当前页' name='Current'>
-        
+        <Rule v-for="item in urlRules" :key="item.id" :data="item"></Rule>
       </n-tab-pane>
     </n-tabs>
   </n-el>
@@ -20,31 +20,46 @@
 <script setup lang='ts'>
 
 import {useCurrentTab} from '@/common/utils/ChromeUtil';
-import {onMounted, ref} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import {NTabPane, NTabs} from 'naive-ui'
 import Handler from "@/common/core/handler";
-
-const currentTab = ref<chrome.tabs.Tab>({} as chrome.tabs.Tab);
-const activeTab = ref<'All' | 'Current'>('All');
-const ruleList = ref([]);
+import Rule from './Rule.vue'
+import {RuleEntity} from "@/common/entitys/PageEntity";
 
 const handler = new Handler('Popup')
+const currentTab = ref<chrome.tabs.Tab>({} as chrome.tabs.Tab);
+const activeTab = ref<'All' | 'Current'>('All');
+
+const origin = ref<string>('')
+const url = ref<string>('')
+
+const originRules = ref<RuleEntity[]>([]);
+
+
+const urlRules = computed(() => {
+  return originRules.value.filter(rule => rule.url == url.value)
+})
 
 onMounted(async () => {
   currentTab.value = await useCurrentTab();
+  url.value = currentTab.value.url || ''
+  let pathArray = url.value.split('/');
+  if (pathArray[2]) {
+    let protocol = pathArray[0];
+    let host = pathArray[2];
+    origin.value = protocol + '//' + host;
+  }
+  handler.sendMessage({
+    source:'Popup',
+    target:'Background',
+    data:origin.value,
+    handler:'GetOriginRules'
+  }).then(response => {
+    originRules.value = response
+  })
+
 });
 
-function execFunc(id: string = '') {
-  // let src = chrome.runtime.getURL('static/js/content.min.js')
-  let src = chrome.runtime.getURL('content/index.js')
-  const container = document.createElement('div');
-  container.setAttribute('id', '_ChromeExtensionsMockContainer')
-  const sc = document.createElement('script');
-  sc.setAttribute('type', 'text/javascript');
-  sc.src = src
-  container.append(sc)
-  document.body.append(container)
-}
 
 
 async function handleCreate(id: string = '') {

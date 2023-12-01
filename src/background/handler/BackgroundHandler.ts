@@ -19,7 +19,6 @@ export default {
         return pageRuleStore.saveRule(data)
     },
     async GetOriginRules(origin:string){
-        console.log('GetOriginRules ',pageRuleStore.getOriginRule(origin))
         return pageRuleStore.getOriginRule(origin)
     },
     async GetPageRules(url:string){
