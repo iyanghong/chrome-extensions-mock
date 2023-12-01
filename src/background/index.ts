@@ -3,10 +3,8 @@ import PopupHandler from "@/background/handler/PopupHandler";
 import BackgroundHandler from "@/background/handler/BackgroundHandler";
 import ContentHandler from "@/background/handler/ContentHandler";
 import OptionHandler from "@/background/handler/OptionHandler";
-// const PageRuleStore = new PageRuleStoreService()
-//
-// await PageRuleStore.refreshData()
-console.log('background')
+
+
 const EventHandler: {
     Background: Record<string, Function>
     Popup: Record<string, Function>
@@ -22,11 +20,15 @@ const EventHandler: {
 
 chrome.runtime.onInstalled.addListener( async () => {
     console.log('background installed')
-    chrome.runtime.onMessage.addListener(function (request: MessageRequestEntity) {
+    chrome.runtime.onMessage.addListener( function (request: MessageRequestEntity, sender, sendResponse) {
         if (request.target && EventHandler[request.target] && EventHandler[request.target][request.handler]) {
-            console.log(`执行事件，source=${request.source}，target=${request.target}，handler=${request.handler}`, request.data)
-            EventHandler[request.target][request.handler].call(null, request.data)
+            (async () => {
+                console.log(`执行事件，source=${request.source}，target=${request.target}，handler=${request.handler}`, request.data)
+                const response = await EventHandler[request.target][request.handler](null, request.data)
+                sendResponse(response)
+            })()
         }
+        return true;
     });
 });
 
