@@ -6,7 +6,7 @@ const pageRuleStore = new PageRuleStoreService()
 console.log(pageRuleStore.getAllRule())
 export default {
     async EmitContentOpenPageRuleForm(data: { id: string, tabId: number }) {
-        let rule: any = pageRuleStore.getRule(data.id || '')
+        let rule: any = pageRuleStore.getRule(data.id)
         let message: MessageRequestEntity = {
             source: 'Background',
             target: 'Content',
@@ -26,5 +26,8 @@ export default {
     },
     async GetPageRule(id: string) {
         return pageRuleStore.getRule(id)
+    },
+    async DeleteRule(id:string){
+        return pageRuleStore.removeRule(id)
     }
 }

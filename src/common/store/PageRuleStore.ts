@@ -37,7 +37,7 @@ export default class PageRuleStore{
     }
 
     getRule(id: string) {
-        let rule = this.rules.filter(it => it.id != id)[0]
+        let rule = this.rules.filter(it => it.id == id)[0]
         if (!rule) rule = {id: ''} as RuleEntity
         return rule
     }
