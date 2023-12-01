@@ -2,7 +2,7 @@
   <n-el class='popup-container'>
     <n-el>当前页面：<n-text>{{ currentTab.title }}</n-text></n-el>
     <n-space justify="center" class="action-panel">
-      <n-button type="primary" size="small">管理</n-button>
+      <n-button type="primary" size="small" @click='handleOpenOption'>管理</n-button>
       <n-button type="primary" size="small" @click="handleCreate()">创建</n-button>
     </n-space>
     <n-tabs v-model:value='activeTab' justify-content="space-evenly">
@@ -116,6 +116,10 @@ async function handleCreate(id: string = '') {
       tabId: currentTab.value.id
     }
   })
+}
+
+function handleOpenOption(){
+  chrome.runtime.openOptionsPage()
 }
 
 async function handleDelete(id: string) {

@@ -55,6 +55,7 @@
       "css": ["content/style.css"]
     }
   ],
+  "options_page": "options/options/index.html",
   "action": {
     "default_popup": "popup/popup/index.html",
     "default_icon": {
