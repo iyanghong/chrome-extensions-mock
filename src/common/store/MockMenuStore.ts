@@ -1,65 +1,60 @@
-import {getStorage, setStorage} from "@/common/utils/cache";
+import { getStorage, setStorage } from '@/common/utils/cache';
+import { RuleEntity } from '@/common/entitys/PageEntity';
+import { MenuEntity, MenuTreeEntity } from '@/common/core/generate/menu';
+import { MockRuleEntity, MockRuleTreeEntity } from '@/common/store/MockRuleStore';
+import { IStore } from '@/common/store/IStore';
 
-export interface MockMenuEntity {
-    id: string
-    name: string
-    command: string
-    parentId: string
-    isAllowEdit: boolean
+const MOCK_MENU_CACHE_KEY = 'MockMenus';
+
+function recursiveTreeData(list: MenuEntity[], parentId: string = '-1'): MenuTreeEntity[] {
+  return list.filter(it => it.parentId == parentId).map(it => {
+    return { ...it, children: recursiveTreeData(list, it.id) };
+  });
 }
 
-export interface MockMenuTreeEntity extends MockMenuEntity {
-    children: MockMenuTreeEntity[]
-}
+export default class MockMenuStore implements IStore<MenuEntity, MenuTreeEntity> {
+  data: MenuEntity[] = [];
 
-const MOCK_MENU_CACHE_KEY = 'MockMenu'
+  constructor() {
+    this.refresh().then();
+  }
 
-function recursiveTreeData(list: MockMenuEntity[], parentId: string = '-1'): MockMenuTreeEntity[] {
-    return list.filter(it => it.parentId == parentId).map(it => {
-        return {...it, children: recursiveTreeData(list, it.id)}
-    })
-}
+  async doCache() {
+    await setStorage(MOCK_MENU_CACHE_KEY, this.data);
+  }
 
-export default class MockMenuStore {
-    menus: MockMenuEntity[] = []
+  async refresh() {
+    this.data = await getStorage<MenuEntity[]>(MOCK_MENU_CACHE_KEY, []);
+  }
 
-    constructor() {
-        this.refreshData().then()
+  async getAll() {
+    return this.data;
+  }
+
+  async remove(id: string) {
+    this.data = this.data.filter(it => it.id != id);
+  }
+
+
+  async getTreeData() {
+    return recursiveTreeData(this.data, '-1');
+  }
+
+  async save(data: MenuEntity): Promise<void> {
+    let checkMenu = this.data.filter(it => it.id == data.id)[0];
+    if (checkMenu) {
+      this.data = this.data.map(it => {
+        if (it.id == data.id) return data;
+        return it;
+      });
+    } else {
+      this.data.push(data);
     }
+    await this.doCache();
+  }
 
-    async doCache() {
-        await setStorage(MOCK_MENU_CACHE_KEY, this.menus)
-    }
+  async get(id: string): Promise<MenuEntity | null> {
+    return this.data.filter(it => it.id == id)[0];
+  }
 
-    async refreshData() {
-        this.menus = await getStorage<MockMenuEntity[]>(MOCK_MENU_CACHE_KEY, [])
-    }
-
-    async saveMenu(menu: MockMenuEntity) {
-        let checkMenu = this.menus.filter(it => it.id == menu.id)[0]
-        if (checkMenu) {
-            this.menus = this.menus.map(it => {
-                if (it.id == menu.id) return menu
-                return it
-            })
-        } else {
-            this.menus.push(menu)
-        }
-        await this.doCache()
-    }
-
-    async deleteMenu(id: string) {
-        this.menus = this.menus.filter(it => it.id != id)
-        await this.doCache()
-    }
-
-    async getMenu(id: string) {
-        let menu = this.menus.filter(it => it.id == id)[0]
-        if (!menu) menu = {id: ''} as MockMenuEntity
-        return menu
-    }
-
-    async getTreeMenu() {
-        return recursiveTreeData(this.menus, '-1')
-    }
 }
