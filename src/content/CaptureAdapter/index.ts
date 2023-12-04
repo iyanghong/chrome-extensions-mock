@@ -71,7 +71,7 @@ export default class CaptureAdapter {
     this.events.value.push(EventListener.listen(target, 'mousedown', e => {
       if (e.target) {
         //@ts-ignore
-        const result = this.resolve(e.target, basePath);
+        const result = this.resolve(e.target);
         if (result && !this.ruleData.value.ruleItems.filter(it => it.realPath == result.realPath)[0]) {
           this.ruleData.value.ruleItems.push({
             adapter: result.adapter,
