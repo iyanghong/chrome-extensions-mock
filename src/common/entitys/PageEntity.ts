@@ -20,6 +20,7 @@ export interface RuleItemEntity {
     tagName: string;
     // 规则的中文label
     name: string;
+    context:string[] // 所处文档上下文，因为不确定是在哪个iframe上
     // 元素真实地址
     realPath: string;
     // 使用的适配器

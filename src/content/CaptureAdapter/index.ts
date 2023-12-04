@@ -67,8 +67,7 @@ export default class CaptureAdapter {
     return false;
   }
 
-  monitor(target: EventTarget | Element | Document, basePath: string = '') {
-
+  monitor(target: EventTarget | Element | Document, context :string[]= []) {
     this.events.value.push(EventListener.listen(target, 'mousedown', e => {
       if (e.target) {
         //@ts-ignore
@@ -77,6 +76,7 @@ export default class CaptureAdapter {
           this.ruleData.value.ruleItems.push({
             adapter: result.adapter,
             id: getUUID(),
+            context:context,
             mockKey: result.mockKey,
             mockName: result.mockName,
             name: result.name,

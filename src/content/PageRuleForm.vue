@@ -47,10 +47,10 @@ function handleSave() {
 /**
  * 递归注册监听器，递归所有iframe
  * @param target
- * @param basePath
+ * @param context
  */
-function recurveMonitorLayer(target: EventTarget | Element | Document, basePath: string = '') {
-  captureAdapter.monitor(target, basePath);
+function recurveMonitorLayer(target: EventTarget | Element | Document, context: string[] = []) {
+  captureAdapter.monitor(target, context);
   //@ts-ignore
   target?.querySelectorAll('iframe').forEach((item: Element, index) => {
     //@ts-ignore
@@ -60,8 +60,8 @@ function recurveMonitorLayer(target: EventTarget | Element | Document, basePath:
       const iframeSrc = item.getAttribute('src');
       // iframe 连src都没有肯定是空的，不需要往下执行
       if (!iframeSrc) return;
-      let basePath = `iframe[src="${iframeSrc}"] `;
-      recurveMonitorLayer(doc, basePath);
+      let iframePath = `iframe[src="${iframeSrc}"] `;
+      recurveMonitorLayer(doc, [...context, iframePath]);
     }
   });
 }
