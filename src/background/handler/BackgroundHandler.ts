@@ -55,8 +55,17 @@ const mockHandler = {
     let value = mock.parse(expression)
     await chrome.scripting.executeScript({
       target: {tabId: tabId},
-      func: (val: string) => {
-        let focusedElement = document.activeElement;
+      func:function (val: string) {
+        const getActiveDocument = (doc:Document) =>{
+          if (doc.activeElement?.tagName == 'IFRAME') {
+            // @ts-ignore
+            return getActiveDocument(doc.activeElement.contentWindow.document)
+          }else{
+            return doc
+          }
+        }
+        let focusedElement = getActiveDocument(document)?.activeElement;
+
         if (focusedElement) {
           // @ts-ignore
           focusedElement.value = val
