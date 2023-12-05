@@ -15,15 +15,15 @@ export default class ElementUiAdapter implements AdapterInterface {
     return '';
   }
 
-  checkbox(target: Element, basePath: string): AdapterResolveItem | undefined {
+  checkbox(target: Element): AdapterResolveItem | undefined {
     if (!target.classList.contains('el-checkbox__label') && !target.classList.contains('el-checkbox__inner')) {
       return undefined;
     }
     if (target.parentNode?.parentNode) target = target.parentNode.parentNode as Element;
     if (target.classList.contains('el-checkbox') && target.parentNode) target = target.parentNode as Element;
-    let realPath = basePath + getDomPath(target) + ' .el-checkbox__original';
+    let realPath = getDomPath(target) + ' .el-checkbox__original';
     let name = getInputPlaceholder(target) || this.getFormItemLabel(target);
-    let type = 'radio';
+    let type = 'checkbox';
     return {
       name,
       mockKey: type,
@@ -35,11 +35,11 @@ export default class ElementUiAdapter implements AdapterInterface {
     };
   }
 
-  input(target: Element, basePath: string): AdapterResolveItem | undefined {
+  input(target: Element): AdapterResolveItem | undefined {
     if (!target.classList.contains('el-input__inner') && !target.classList.contains('el-textarea__inner')) return undefined;
-    let realPath = basePath + getDomPath(target);
+    let realPath = getDomPath(target);
     let name = getInputPlaceholder(target) || this.getFormItemLabel(target);
-    let type = 'radio';
+    let type = 'input';
     return {
       name,
       mockKey: '',
@@ -51,12 +51,12 @@ export default class ElementUiAdapter implements AdapterInterface {
     };
   }
 
-  radio(target: Element, basePath: string): AdapterResolveItem | undefined {
+  radio(target: Element): AdapterResolveItem | undefined {
     if (!target.classList.contains('el-radio__label') && !target.classList.contains('el-radio__inner')) return undefined;
     if (target.parentNode?.parentNode) target = target.parentNode.parentNode as Element;
     if (target.classList.contains('el-radio') && target.parentNode) target = target.parentNode as Element;
 
-    let realPath = basePath + getDomPath(target) + ' .el-radio__original';
+    let realPath = getDomPath(target) + ' .el-radio__original';
     let name = getInputPlaceholder(target) || this.getFormItemLabel(target);
     let type = 'radio';
     return {
@@ -70,14 +70,14 @@ export default class ElementUiAdapter implements AdapterInterface {
     };
   }
 
-  select(target: Element, basePath: string): AdapterResolveItem | undefined {
+  select(target: Element): AdapterResolveItem | undefined {
     //@ts-ignore
     if (!(target.classList.contains('el-input__inner') && target.parentNode?.parentNode?.classList.contains('el-select')) && !target.classList.contains('el-select__tags')) return undefined;
     let name = getInputPlaceholder(target);
     target = target.parentNode as Element;
     if (!target.classList.contains('el-select__tags')) target = target.parentNode as Element;
-    let realPath = basePath + getDomPath(target);
-    let type = 'elSelect';
+    let realPath = getDomPath(target);
+    let type = 'select';
     return {
       name,
       mockKey: type,
@@ -89,9 +89,9 @@ export default class ElementUiAdapter implements AdapterInterface {
     };
   }
 
-  switch(target: Element, basePath: string): AdapterResolveItem | undefined {
+  switch(target: Element): AdapterResolveItem | undefined {
     if (!target.classList.contains('el-switch__core')) return undefined;
-    let realPath = basePath + getDomPath(target);
+    let realPath = getDomPath(target);
     let name = getInputPlaceholder(target) || this.getFormItemLabel(target);
     let type = 'switch';
     return {

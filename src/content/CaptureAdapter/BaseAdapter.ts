@@ -4,7 +4,7 @@ import {getDomPath, getFormItemTypeText} from "@/content/util";
 export default class BaseAdapter implements AdapterInterface{
     adapterName = "Base"
 
-    checkbox(target:Element, basePath: string): AdapterResolveItem | undefined {
+    checkbox(target:Element): AdapterResolveItem | undefined {
         if (target.tagName === 'INPUT' && target.getAttribute('type') === 'checkbox') {
             // @ts-ignore
             target = target.parentNode
@@ -13,14 +13,14 @@ export default class BaseAdapter implements AdapterInterface{
         return undefined;
     }
 
-    input(target:Element, basePath: string): AdapterResolveItem | undefined {
+    input(target:Element): AdapterResolveItem | undefined {
         if (['INPUT', 'TEXTAREA'].indexOf(target.tagName) > -1) {
             return this.getRuleItem('input', target, '')
         }
         return undefined;
     }
 
-    radio(target: Element, basePath: string): AdapterResolveItem | undefined {
+    radio(target: Element): AdapterResolveItem | undefined {
         if (target.tagName === 'INPUT' && target.getAttribute('type') === 'radio') {
             // @ts-ignore
             target = target.parentNode
@@ -29,14 +29,14 @@ export default class BaseAdapter implements AdapterInterface{
         return undefined;
     }
 
-    select(target: Element, basePath: string): AdapterResolveItem | undefined {
+    select(target: Element): AdapterResolveItem | undefined {
         if (target.tagName === 'SELECT') {
             return this.getRuleItem('select', target, '')
         }
         return undefined;
     }
 
-    switch(target: Element, basePath: string): AdapterResolveItem | undefined {
+    switch(target: Element): AdapterResolveItem | undefined {
         return undefined;
     }
 

@@ -17,9 +17,9 @@ export interface AdapterResolveItem {
 
 export default interface AdapterInterface {
   adapterName: string;
-  input: (target: Element, basePath: string) => (AdapterResolveItem | undefined);
-  select: (target: Element, basePath: string) => (AdapterResolveItem | undefined);
-  radio: (target: Element, basePath: string) => (AdapterResolveItem | undefined);
-  checkbox: (target: Element, basePath: string) => (AdapterResolveItem | undefined);
-  switch: (target: Element, basePath: string) => (AdapterResolveItem | undefined);
+  input: (target: Element) => (AdapterResolveItem | undefined);
+  select: (target: Element) => (AdapterResolveItem | undefined);
+  radio: (target: Element) => (AdapterResolveItem | undefined);
+  checkbox: (target: Element) => (AdapterResolveItem | undefined);
+  switch: (target: Element) => (AdapterResolveItem | undefined);
 }

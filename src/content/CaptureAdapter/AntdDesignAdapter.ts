@@ -3,25 +3,26 @@ import AdapterInterface, {AdapterResolveItem} from "@/content/CaptureAdapter/Ada
 export default class AntdDesignAdapter implements AdapterInterface{
     adapterName = 'AntdDesign';
 
-    checkbox(target: Element, basePath: string): AdapterResolveItem | undefined {
+    checkbox(target: Element): AdapterResolveItem | undefined {
         return undefined;
     }
 
-    input(target: Element, basePath: string): AdapterResolveItem | undefined {
+    input(target: Element): AdapterResolveItem | undefined {
         return undefined;
     }
 
-    radio(target: Element, basePath: string): AdapterResolveItem | undefined {
+    radio(target: Element): AdapterResolveItem | undefined {
         return undefined;
     }
 
-    select(target: Element, basePath: string): AdapterResolveItem | undefined {
+    select(target: Element): AdapterResolveItem | undefined {
         return undefined;
     }
 
-    switch(target: Element, basePath: string): AdapterResolveItem | undefined {
+    switch(target: Element): AdapterResolveItem | undefined {
         return undefined;
     }
+
 
 
 
