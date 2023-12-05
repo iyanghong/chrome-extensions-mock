@@ -57,33 +57,13 @@ const mockHandler = {
       target: {tabId: tabId},
       func: (val: string) => {
         let focusedElement = document.activeElement;
-        let win = window
-        // @ts-ignore
-        if (document.activeElement.tagName == 'IFRAME') {
-          // @ts-ignore
-          focusedElement = document.activeElement.contentWindow.document.activeElement
-          // @ts-ignore
-          win = document.activeElement.contentWindow
-        }
-        console.log(focusedElement)
         if (focusedElement) {
-          if (focusedElement.classList.contains('mini-textbox-input')){
-            let idStr = focusedElement.getAttribute('id') || ''
-            let elIndex = idStr.lastIndexOf('$')
-            let realId = idStr.substring(0,elIndex)
-            console.log(win)
-            // @ts-ignore
-            if (realId){
-              //@ts-ignore
-              win.mini.get(realId).setValue(val)
-            }
-          }else {
-            // @ts-ignore
-            focusedElement.value = val
-            const event = document.createEvent('HTMLEvents');
-            event.initEvent('input', false, true);
-            focusedElement.dispatchEvent(event);
-          }
+          // @ts-ignore
+          focusedElement.value = val
+          const event = document.createEvent('HTMLEvents');
+          event.initEvent('input', false, true);
+          event.initEvent('change', false, true);
+          focusedElement.dispatchEvent(event);
         }
         return true
       },
