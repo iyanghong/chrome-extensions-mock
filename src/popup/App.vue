@@ -56,7 +56,9 @@ let columns: DataTableColumns<RuleEntity> = [
     render: (row: RuleEntity) => {
       return h(NSpace, {justify: "space-between", wrap: false, align: "center"}, {
         default: () => [
-          h(NButton, {style: "width:100px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;"}, {default: () => row.name}),
+          h(NButton, {style: "width:100px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;",onClick:() => {
+              handler.sendBackgroundMessage('injectRuleValues', row.ruleItems);
+            }}, {default: () => row.name}),
           h(NSpace, {justify: "space-between", wrap: false, align: "center"}, {
             default: () => [
               h(NButton, {

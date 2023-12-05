@@ -1,12 +1,13 @@
-import {MessageRequestEntity} from '@/common/entitys/MessageType';
+import { MessageRequestEntity } from '@/common/entitys/MessageType';
 import PageRuleStoreService from '@/common/store/PageRuleStore';
-import {RuleEntity} from '@/common/entitys/PageEntity';
+import { RuleEntity, RuleItemEntity, RuleItemInjectEntity } from '@/common/entitys/PageEntity';
 import Mock from '@/common/core/generate/index';
-import MockMenuStore from "@/common/store/MockMenuStore";
-import {MenuEntity} from "@/common/core/generate/menu";
+import MockMenuStore from '@/common/store/MockMenuStore';
+import { MenuEntity } from '@/common/core/generate/menu';
+import { useCurrentTab } from '@/common/utils/ChromeUtil';
 
 const pageRuleStore = new PageRuleStoreService();
-const menuStore = new MockMenuStore()
+const menuStore = new MockMenuStore();
 
 const mock = new Mock();
 
@@ -46,60 +47,79 @@ const mockHandler = {
     return mock.getAllList();
   },
   async getAllMockEntity() {
-    return mock.getAllMockEntity()
+    return mock.getAllMockEntity();
   },
   async getMockValue(expression: string) {
-    return mock.parse(expression)
+    return mock.parse(expression);
   },
   async setFocusedInputMockData(expression: string, tabId: number) {
-    let value = mock.parse(expression)
+    let value = mock.parse(expression);
     await chrome.scripting.executeScript({
-      target: {tabId: tabId},
-      func:function (val: string) {
-        const getActiveDocument = (doc:Document) =>{
+      target: { tabId: tabId },
+      func: function(val: string) {
+        const getActiveDocument = (doc: Document) => {
           if (doc.activeElement?.tagName == 'IFRAME') {
             // @ts-ignore
-            return getActiveDocument(doc.activeElement.contentWindow.document)
-          }else{
-            return doc
+            return getActiveDocument(doc.activeElement.contentWindow.document);
+          } else {
+            return doc;
           }
-        }
+        };
         let focusedElement = getActiveDocument(document)?.activeElement;
 
         if (focusedElement) {
           // @ts-ignore
-          focusedElement.value = val
+          focusedElement.value = val;
           const event = document.createEvent('HTMLEvents');
           event.initEvent('input', false, true);
           event.initEvent('change', false, true);
           focusedElement.dispatchEvent(event);
         }
-        return true
+        return true;
       },
       args: [value]
-    })
+    });
   },
+  async setMockData(rules: RuleItemEntity[]) {
+
+  }
 };
 
 const mockMenuHandler = {
   async getAllMockMenu() {
-    return menuStore.getAll()
+    return menuStore.getAll();
   },
   async getTreeMockMenuData() {
-    return menuStore.getTreeData()
+    return menuStore.getTreeData();
   },
   async saveMockMenu(data: MenuEntity) {
-    return await menuStore.save(data)
+    return await menuStore.save(data);
   },
   async removeMockMenu(id: string) {
-    return await menuStore.remove(id)
+    return await menuStore.remove(id);
   },
   async getMockMenu(id: string) {
-    return menuStore.get(id)
+    return menuStore.get(id);
   }
 };
 export default {
   ...pageRuleHandler,
   ...mockHandler,
-  ...mockMenuHandler
+  ...mockMenuHandler,
+  async injectRuleValues(data: RuleItemInjectEntity[]) {
+    let injectData: RuleItemInjectEntity[] = data.map(rule => {
+      return {
+        ...rule,
+        value: mock.parse(rule.mockKey)
+      };
+    });
+    let currentTab = await useCurrentTab();
+    let message: MessageRequestEntity = {
+      source: 'Background',
+      target: 'Content',
+      handler: 'InjectRuleValues',
+      data: injectData
+    };
+    return chrome.tabs.sendMessage(<number>currentTab.id, message);
+  }
 };

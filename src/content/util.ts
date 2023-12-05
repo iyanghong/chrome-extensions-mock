@@ -10,7 +10,7 @@ export function getInputPlaceholder(el): string {
 
 export function getDomPath(el) {
   if (!el) {
-    return;
+    return '';
   }
   let stack = [];
   let isShadow = false;
