@@ -3,6 +3,7 @@
     <n-space vertical item-style="padding-left:10px">
       <n-space>
         <n-button type='primary' size='small' @click='handleShowMockModal'>查看所有Mock</n-button>
+        <n-button type='primary' size='small' @click='handleShowMockSelectModal'>预览Mock选择</n-button>
       </n-space>
       <n-input v-model:value="pattern" placeholder="搜索" style="width: 260px"/>
       <n-tree
@@ -20,13 +21,14 @@
   </n-el>
   <MockListModal ref='mockListModalRef'></MockListModal>
   <MockMenuForm ref='mockMenuFormRef' @close="handleMockMenuFormClose"></MockMenuForm>
-
+  <MockMenuSelectModal ref='mockMenuSelectModalRef' :data='treeMockMenuData' @select='handleSelectMenu'></MockMenuSelectModal>
 </template>
 
 <script setup lang='ts'>
 import {NButton, NEl, NInput, NSpace, NTree, TreeOption, useMessage} from 'naive-ui';
 import MockListModal from './MockListModal.vue';
 import MockMenuForm from './MockMenuForm.vue';
+import MockMenuSelectModal  from '@/common/components/MockMenuModal/index.vue'
 import {h, ref} from 'vue';
 import Clipboard from 'clipboard';
 import {MenuTreeEntity} from "@/common/core/generate/menu";
@@ -36,15 +38,18 @@ const message = useMessage()
 const handler = new Handler('Options');
 const mockListModalRef = ref();
 const mockMenuFormRef = ref();
+const mockMenuSelectModalRef = ref();
 const mockMenuTreeOptions = ref<TreeOption[]>([])
+const treeMockMenuData = ref<MenuTreeEntity[]>([])
 const pattern = ref<string>('')
 function handleShowMockModal() {
   mockListModalRef.value?.open();
 }
 
 async function handleLoad() {
-  mockMenuTreeOptions.value = handleResolve(await handler.sendBackgroundMessage('getTreeMockMenuData'))
-  console.log(mockMenuTreeOptions.value)
+  treeMockMenuData.value = await handler.sendBackgroundMessage('getTreeMockMenuData')
+  mockMenuTreeOptions.value = handleResolve(treeMockMenuData.value)
+  console.log(treeMockMenuData.value);
 }
 
 function handleResolve(list: MenuTreeEntity[]): TreeOption[] {
@@ -106,6 +111,12 @@ async function handleCopy(content: string, successMessage: string = 'Mock成功�
 
 function handleMockMenuFormClose(flag:boolean){
   if (flag) handleLoad()
+}
+function handleShowMockSelectModal(){
+  mockMenuSelectModalRef.value?.open()
+}
+function handleSelectMenu(item:MenuTreeEntity){
+  console.log(item);
 }
 handleLoad()
 </script>

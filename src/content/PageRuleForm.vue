@@ -5,14 +5,18 @@
       <n-input type='text' size='small' placeholder='请输入名称' v-model:value="ruleData.name"></n-input>
     </n-space>
     <n-text class='description'>注：点击页面上的控件来添加控件</n-text>
+    <n-scrollbar style="height: 500px">
     <n-space vertical>
       <n-el v-for="item in ruleData.ruleItems" :key="item.id" class="rule-item">
-        <n-input type="text" v-model:value="item.name"></n-input>
-        <n-text>{{ item.mockName }}</n-text>
-        <n-button text type="error">删除</n-button>
+        <n-space size='small' :wrap='false' align='center'>
+          <n-input type="text" size='small' v-model:value="item.name" placeholder='请输入规则名' style='width: 120px'></n-input>
+          <n-el style='width: 80px;'>{{ item.mockName || '请选择' }}</n-el>
+          <n-button text type="error" size='small'>删除</n-button>
+        </n-space>
       </n-el>
 
     </n-space>
+    </n-scrollbar>
 
     <n-space justify="space-around">
       <n-button size="small" type="default" @click="handleClose">取消</n-button>
@@ -22,6 +26,7 @@
   </Modal>
 </template>
 <script setup lang='ts'>
+import {NScrollbar} from 'naive-ui'
 import Modal from '@/common/components/Modal/index.vue'
 import {getCurrentInstance} from "vue";
 import GlobalProperties, {IGlobalProperties} from "@/content/GlobalProperties";
