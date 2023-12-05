@@ -1,5 +1,5 @@
 <template>
-  <n-modal preset='dialog' v-model:show='visible' title='规则菜单' style='width: 600px' @close='handleClose' :show-icon='false'>
+  <n-modal preset='dialog' v-model:show='visible' title='规则菜单' style='width: 600px' z-index='999999' @close='handleClose' :show-icon='false'>
     <n-scrollbar style='height: 500px'>
       <MenuItem v-for='item in data' :key='item.id' :data='item' @item-click='handleSelect'></MenuItem>
     </n-scrollbar>
