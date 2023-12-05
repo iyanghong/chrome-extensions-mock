@@ -11,6 +11,15 @@ export type BackgroundHandler =
 
   | 'getAllMockEntity'
   | 'getAllMock'
+  | 'getMockValue'
+
+
+
+  | 'getAllMockMenu'
+  | 'getTreeMockMenuData'
+  | 'saveMockMenu'
+  | 'removeMockMenu'
+  | 'getMockMenu'
 
 export interface IHandler {
   on: (key: string, callback: (response: MessageRequestEntity) => void) => void;

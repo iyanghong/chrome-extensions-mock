@@ -5,9 +5,11 @@ export interface MenuEntity {
   name: string,
   expression: string | null,
   parentId: string
+  sort: number,
+  parentPathText?: string
 }
 export interface MenuTreeEntity extends MenuEntity{
-  children:MenuTreeEntity[]
+  children?: MenuTreeEntity[]
 }
 
 const defaultMenu = [
@@ -80,16 +82,18 @@ const defaultMenu = [
 export function getDefaultMenu(): MenuEntity[] {
   const list: MenuEntity[] = [];
 
-  function generateMenu(data: any[], parentId = '-1') {
+  function generateMenu(data: any[], parentId = '-1', parentPathText: string = '顶层') {
     data.forEach(item => {
-      const id = getUUID();
+      let id = getUUID();
       list.push({
         id,
         name: item.name,
         parentId: parentId,
-        expression: item.expression
+        expression: item.expression,
+        parentPathText: parentPathText,
+        sort: 0,
       });
-      if (item.children && item.children.length) generateMenu(list, id);
+      if (item.children && item.children.length) generateMenu(item.children, id, `${parentPathText}/${item.name}`);
     });
   }
 

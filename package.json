@@ -19,6 +19,7 @@
     "@metamask/post-message-stream": "^6.1.1",
     "@metamask/providers": "^10.2.1",
     "@types/chrome": "^0.0.243",
+    "clipboard": "^2.0.11",
     "lodash-es": "^4.17.21",
     "loglevel": "^1.8.1",
     "metamask-extension-provider": "^3.0.0",

@@ -1,14 +1,17 @@
-import { getStorage, setStorage } from '@/common/utils/cache';
-import { RuleEntity } from '@/common/entitys/PageEntity';
-import { MenuEntity, MenuTreeEntity } from '@/common/core/generate/menu';
-import { MockRuleEntity, MockRuleTreeEntity } from '@/common/store/MockRuleStore';
-import { IStore } from '@/common/store/IStore';
+import {getStorage, setStorage} from '@/common/utils/cache';
+import {getDefaultMenu, MenuEntity, MenuTreeEntity} from '@/common/core/generate/menu';
+import {IStore} from '@/common/store/IStore';
 
 const MOCK_MENU_CACHE_KEY = 'MockMenus';
 
 function recursiveTreeData(list: MenuEntity[], parentId: string = '-1'): MenuTreeEntity[] {
   return list.filter(it => it.parentId == parentId).map(it => {
-    return { ...it, children: recursiveTreeData(list, it.id) };
+    let children = recursiveTreeData(list, it.id)
+    let item:MenuTreeEntity =  { ...it  }
+    if (children && children.length > 0){
+      item.children = children
+    }
+    return item;
   });
 }
 
@@ -24,19 +27,20 @@ export default class MockMenuStore implements IStore<MenuEntity, MenuTreeEntity>
   }
 
   async refresh() {
-    this.data = await getStorage<MenuEntity[]>(MOCK_MENU_CACHE_KEY, []);
+    this.data = await getStorage<MenuEntity[]>(MOCK_MENU_CACHE_KEY, getDefaultMenu());
   }
 
-  async getAll() {
+  getAll() {
     return this.data;
   }
 
   async remove(id: string) {
     this.data = this.data.filter(it => it.id != id);
+    await this.doCache()
   }
 
 
-  async getTreeData() {
+  getTreeData() {
     return recursiveTreeData(this.data, '-1');
   }
 
@@ -53,7 +57,7 @@ export default class MockMenuStore implements IStore<MenuEntity, MenuTreeEntity>
     await this.doCache();
   }
 
-  async get(id: string): Promise<MenuEntity | null> {
+  get(id: string): MenuEntity | null {
     return this.data.filter(it => it.id == id)[0];
   }
 

@@ -1,4 +1,5 @@
 <template>
+  <n-message-provider>
   <n-el class='options-header' style='padding: 12px'>
     <n-space :wrap='false'>
       <n-el class='logo'>
@@ -18,20 +19,20 @@
     <n-tab-pane tab='页面规则' name='PageRule'>
       <PageRuleAdmin></PageRuleAdmin>
     </n-tab-pane>
-    <n-tab-pane tab='规则菜单' name='MockRule'>
+    <n-tab-pane tab='规则菜单' name='MockMenu'>
       <MockAdmin></MockAdmin>
     </n-tab-pane>
   </n-tabs>
+  </n-message-provider>
 </template>
 <script setup lang='ts'>
 import MockAdmin from './MockAdmin.vue';
 import PageRuleAdmin from './PageRuleAdmin.vue';
-import { NTabPane, NTabs,NSpace,NEl } from 'naive-ui';
-import { ref } from 'vue';
-import Handler from '@/common/core/handler';
+import {NEl, NMessageProvider, NSpace, NTabPane, NTabs} from 'naive-ui';
+import {ref} from 'vue';
 
 const iconPath = '/icon/icon-64.png';
-const activeTab = ref<string>('MockRule');
+const activeTab = ref<string>('MockMenu');
 
 
 </script>
