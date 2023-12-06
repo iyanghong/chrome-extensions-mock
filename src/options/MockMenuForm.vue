@@ -8,7 +8,12 @@
         <n-input v-model:value="menuData.name" placeholder="请输入名称"></n-input>
       </n-form-item>
       <n-form-item label="表达式">
-        <n-input type="textarea" v-model:value="menuData.expression" placeholder="请输入表达式"></n-input>
+        <n-mention
+          v-model:value="menuData.expression"
+          placeholder="请输入表达式"
+          type="textarea"
+          :options="mentionOptions"
+        />
       </n-form-item>
       <n-form-item>
         <n-space justify="center" style="width: 100%">
@@ -21,10 +26,11 @@
 </template>
 <script setup lang="ts">
 
-import {NModal,NForm,NFormItem,NText,NButton,NSpace,NInput} from "naive-ui";
-import {ref} from "vue";
+import {NModal,NForm,NFormItem,NText,NButton,NSpace,NInput,NMention} from "naive-ui";
+import { h, ref } from 'vue';
 import Handler from "@/common/core/handler";
 import {MenuEntity} from "@/common/core/generate/menu";
+import { MockItemEntity, MockItemType } from '@/common/core/generate/types';
 
 
 const emit = defineEmits(['close'])
@@ -33,7 +39,14 @@ const handler = new Handler('Options');
 const menuData = ref<MenuEntity>()
 
 
+const mentionOptions = ref([])
 async function handleLoad(id: string) {
+  mentionOptions.value = (await handler.sendBackgroundMessage('getAllMockEntity')).map((it:MockItemEntity) => {
+    return {
+      value: it.placeholder.replace('@',''),
+      label: `${it.placeholder.replace('@','')}(${it.comment})`,
+    }
+  });
   menuData.value = await handler.sendBackgroundMessage('getMockMenu', id)
 }
 

@@ -18,6 +18,14 @@ const defaultMenu = [
     expression: '@idioms()'
   },
   {
+    name: '姓名',
+    expression: '@fullNameCN()'
+  },
+  { name: '昵称', expression: '@nickname()' },
+  { name: '个性签名', expression: '@personDescription()' },
+  { name: '手机号', expression: '@mobile()' },
+  { name: '邮箱', expression: '@email()' },
+  {
     name: '个人信息',
     expression: null,
     children: [
