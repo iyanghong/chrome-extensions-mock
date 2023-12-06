@@ -25,9 +25,9 @@ export default class PageRuleStore{
                 if (it.id == rule.id) return rule
                 return it
             })
+        }else {
+            this.rules.push(rule)
         }
-        this.rules.push(rule)
-
         await this.doCache()
     }
 
