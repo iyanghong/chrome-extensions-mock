@@ -76,10 +76,12 @@ function recurveMonitorLayer(target: EventTarget | Element | Document, context: 
     if (item && item.contentWindow) {
       //@ts-ignore
       const doc: Document = item.contentWindow.document;
-      const iframeSrc = item.getAttribute('src');
+      let iframeSrc = item.getAttribute('src');
+
       // iframe 连src都没有肯定是空的，不需要往下执行
       if (!iframeSrc) return;
-      let iframePath = `iframe[src="${iframeSrc}"] `;
+      let iframeSrcArray = iframeSrc.split('?')
+      let iframePath = `iframe[src*="${iframeSrcArray[0]}"] `;
       recurveMonitorLayer(doc, [...context, iframePath]);
     }
   });

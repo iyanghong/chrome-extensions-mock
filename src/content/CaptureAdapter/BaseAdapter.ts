@@ -41,7 +41,7 @@ export default class BaseAdapter implements AdapterInterface{
     }
 
     private getRuleItem(type: string, target: Element, suffixRealPath: string = ''): AdapterResolveItem {
-        let realPath = getDomPath(target) + ' .el-checkbox__original';
+        let realPath = getDomPath(target);
         let name = ''
         if (target.getAttribute('placeholder')) {
             // @ts-ignore

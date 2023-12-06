@@ -38,20 +38,20 @@ export default class CaptureAdapter {
     console.log('target => ', target);
     for (const adapter of this.adapterList) {
       let result: AdapterResolveItem | undefined = undefined;
-      result = adapter.select(target, basePath);
+      result = adapter.select(target);
       if (result) return result;
 
-      result = adapter.checkbox(target, basePath);
+      result = adapter.checkbox(target);
       if (result) return result;
 
-      result = adapter.radio(target, basePath);
+      result = adapter.radio(target);
       if (result) return result;
 
-      result = adapter.input(target, basePath);
+      result = adapter.input(target);
       if (result) return result;
 
 
-      result = adapter.switch(target, basePath);
+      result = adapter.switch(target);
       if (result) return result;
 
     }

@@ -27,7 +27,10 @@ export default class BaseAdapter implements IAdapter {
   }
 
   input(rule: RuleItemInjectEntity): void {
+
     let inputEl = getContextDocument(rule.context).querySelector(rule.realPath);
+    console.log('doc => ',getContextDocument(rule.context))
+    console.log('inputEl => ',inputEl)
     if (inputEl) {
       //@ts-ignore
       inputEl.value = rule.value;
