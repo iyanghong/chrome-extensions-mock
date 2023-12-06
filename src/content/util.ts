@@ -59,8 +59,6 @@ export function getFormItemTypeText(type: string) {
     checkbox: '多选框',
     switch: '开关',
     select: '下拉框',
-    elSelect: '下拉框',
-    antdSelect: '下拉框'
   };
   return typeText[type] || '';
 }
