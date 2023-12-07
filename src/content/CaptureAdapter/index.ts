@@ -60,7 +60,7 @@ export default class CaptureAdapter {
 
   checkIsContainer(el, basePath) {
     if (el.tagName === 'HTML' || el.tagName === 'BODY') return false;
-    if (el.tagName === 'DIV' && el.id === this.containerId) {
+    if (el.tagName === 'DIV' && (el.id === this.containerId || el.classList.contains('ChromeExtensionsMockContainer_SelectMock'))) {
       return true;
     }
     if (el.parentNode) return this.checkIsContainer(el.parentNode, basePath);

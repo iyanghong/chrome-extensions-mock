@@ -18,18 +18,23 @@
       :style='{ height: `calc(100vh - 300px)` }'
       flex-height
     />
+
+    <MockRuleForm ref="mockRuleFormRef" :handler="handler" @save="handleSave"></MockRuleForm>
   </n-el>
 </template>
 <script setup lang='ts'>
 import Handler from '@/common/core/handler';
-import { DataTableColumns, NEl, NSelect, NButton, NSpace, NInput, NTabPane, NTag, NDataTable } from 'naive-ui';
-import { computed, h, ref } from 'vue';
-import { RuleEntity } from '@/common/entitys/PageEntity';
+import {DataTableColumns, NButton, NDataTable, NEl, NInput, NSelect, NSpace, NTag} from 'naive-ui';
+import {computed, h, ref} from 'vue';
+import {RuleEntity} from '@/common/entitys/PageEntity';
+import MockRuleForm from '@/common/components/MockRuleForm/index.vue'
 
-const handler = new Handler('Options');
+const handler = ref(new Handler('Options'));
 const dataList = ref<RuleEntity[]>([]);
 const searchKey = ref<string>('');
 const selectOrigin = ref<string>('');
+const mockRuleFormRef = ref()
+
 const filterList = computed(() => {
   return dataList.value.filter(it => (selectOrigin.value ? it.origin == selectOrigin.value : true) && (it.origin.includes(searchKey.value) || it.url.includes(searchKey.value) || it.name.includes(searchKey.value)));
 });
@@ -81,7 +86,7 @@ let columns: DataTableColumns<RuleEntity> = [
             size: 'small',
             text: true,
             type: 'primary',
-            onClick: () => handleEdit(row.id)
+            onClick: () => handleEdit(row)
           }, { default: () => '编辑' }),
           h(NButton, {
             size: 'small',
@@ -96,17 +101,23 @@ let columns: DataTableColumns<RuleEntity> = [
 ];
 
 async function loadData() {
-  let response = await handler.sendBackgroundMessage('GetAllPageRule');
+  let response = await handler.value.sendBackgroundMessage('GetAllPageRule');
 
   console.log('response = ', response);
   dataList.value = response;
 }
 
-function handleEdit(id: string) {
+function handleEdit(rule: RuleEntity) {
+  mockRuleFormRef.value?.open(rule)
+}
+
+async function handleSave(rule: RuleEntity) {
+  await handler.value.sendBackgroundMessage('SavePageRule', rule)
+  await loadData()
 }
 
 async function handleDelete(id: string) {
-  await handler.sendBackgroundMessage('DeleteRule', id);
+  await handler.value.sendBackgroundMessage('DeleteRule', id);
   await loadData();
 }
 

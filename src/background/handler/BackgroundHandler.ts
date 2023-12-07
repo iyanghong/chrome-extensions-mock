@@ -1,10 +1,10 @@
-import { MessageRequestEntity } from '@/common/entitys/MessageType';
+import {MessageRequestEntity} from '@/common/entitys/MessageType';
 import PageRuleStoreService from '@/common/store/PageRuleStore';
-import { RuleEntity, RuleItemEntity, RuleItemInjectEntity } from '@/common/entitys/PageEntity';
+import {RuleEntity, RuleItemEntity, RuleItemInjectEntity} from '@/common/entitys/PageEntity';
 import Mock from '@/common/core/generate/index';
 import MockMenuStore from '@/common/store/MockMenuStore';
-import { MenuEntity } from '@/common/core/generate/menu';
-import { useCurrentTab } from '@/common/utils/ChromeUtil';
+import {MenuEntity} from '@/common/core/generate/menu';
+import {useCurrentTab} from '@/common/utils/ChromeUtil';
 
 const pageRuleStore = new PageRuleStoreService();
 const menuStore = new MockMenuStore();
@@ -20,7 +20,12 @@ const pageRuleHandler = {
       handler: 'OpenPageRuleFrom',
       data: rule
     };
-    return chrome.tabs.sendMessage(data.tabId, message);
+    try {
+      chrome.tabs.sendMessage(data.tabId, message).then();
+    } catch (e) {
+      console.error(e)
+    }
+    return true
   },
   async SavePageRule(data: RuleEntity) {
     return pageRuleStore.saveRule(data);

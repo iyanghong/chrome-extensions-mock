@@ -26,6 +26,7 @@ export type BackgroundHandler =
 export interface IHandler {
   on: (key: string, callback: (response: MessageRequestEntity) => void) => void;
   sendMessage: (message: MessageRequestEntity) => Promise<any>;
+  sendBackgroundMessage: (handler: BackgroundHandler, data: any) => Promise<any>;
 }
 
 export default class Handler implements IHandler {

@@ -28,10 +28,9 @@
 
 </template>
 <script setup lang='ts'>
-
 import {useCurrentTab} from '@/common/utils/ChromeUtil';
 import {computed, h, onMounted, ref} from 'vue';
-import {DataTableColumns, NButton, NSpace, NTabPane, NTabs} from 'naive-ui'
+import {DataTableColumns, NEl,NText,NButton, NSpace, NTabPane, NTabs,NDataTable} from 'naive-ui'
 import Handler from "@/common/core/handler";
 import {RuleEntity} from "@/common/entitys/PageEntity";
 

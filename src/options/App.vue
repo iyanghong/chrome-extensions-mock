@@ -28,11 +28,11 @@
 <script setup lang='ts'>
 import MockAdmin from './MockAdmin.vue';
 import PageRuleAdmin from './PageRuleAdmin.vue';
-import {NEl, NMessageProvider, NSpace, NTabPane, NTabs} from 'naive-ui';
+import {NEl, NMessageProvider, NSpace, NTabPane, NTabs,NText} from 'naive-ui';
 import {ref} from 'vue';
 
 const iconPath = '/icon/icon-64.png';
-const activeTab = ref<string>('MockMenu');
+const activeTab = ref<string>('PageRule');
 
 
 </script>

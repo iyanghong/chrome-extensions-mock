@@ -28,7 +28,7 @@
   </Modal>
 </template>
 <script setup lang='ts'>
-import { NScrollbar } from 'naive-ui';
+import { NScrollbar,NSpace,NButton,NEl,NInput,NText } from 'naive-ui';
 import Modal from '@/common/components/Modal/index.vue';
 import { getCurrentInstance, ref } from 'vue';
 import GlobalProperties, { IGlobalProperties } from '@/content/GlobalProperties';

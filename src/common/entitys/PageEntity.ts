@@ -10,7 +10,14 @@ export interface RuleEntity {
   url: string    // URL
   siteTitle: string // 网站标识
   order: number // 排序
+  events?: RuleEvent[]
   ruleItems: RuleItemEntity[]
+}
+
+export interface RuleEvent {
+  type: 'before' | 'after',
+  name: string
+  content: string
 }
 
 export interface RuleItemEntity {
