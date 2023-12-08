@@ -17,7 +17,7 @@
       <n-tab-pane tab='当前页' name='Current'>
         <n-data-table
             :columns="columns"
-            :data="originRules"
+            :data="urlRules"
             :style="{ height: `300px` }"
             flex-height
         />
@@ -30,9 +30,9 @@
 <script setup lang='ts'>
 import {useCurrentTab} from '@/common/utils/ChromeUtil';
 import {computed, h, onMounted, ref} from 'vue';
-import {DataTableColumns, NEl,NText,NButton, NSpace, NTabPane, NTabs,NDataTable} from 'naive-ui'
+import {DataTableColumns, NButton, NDataTable, NEl, NSpace, NTabPane, NTabs, NText} from 'naive-ui'
 import Handler from "@/common/core/handler";
-import {RuleEntity} from "@/common/entitys/PageEntity";
+import {RuleEntity, RuleItemEntity} from "@/common/entitys/PageEntity";
 
 const handler = new Handler('Popup')
 const currentTab = ref<chrome.tabs.Tab>({} as chrome.tabs.Tab);
@@ -56,7 +56,7 @@ let columns: DataTableColumns<RuleEntity> = [
       return h(NSpace, {justify: "space-between", wrap: false, align: "center"}, {
         default: () => [
           h(NButton, {style: "width:100px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;",onClick:() => {
-              handler.sendBackgroundMessage('injectRuleValues', row.ruleItems);
+              handleInjectRuleValues(row.ruleItems);
             }}, {default: () => row.name}),
           h(NSpace, {justify: "space-between", wrap: false, align: "center"}, {
             default: () => [
@@ -89,33 +89,34 @@ onMounted(async () => {
     let host = pathArray[2];
     origin.value = protocol + '//' + host;
   }
-  loadData()
+  await loadData()
 
 });
 
-function loadData() {
+async function loadData() {
   console.log('origin.value', origin.value)
-  handler.sendMessage({
-    source: 'Popup',
-    target: 'Background',
-    data: origin.value,
-    handler: 'GetOriginRules'
-  }).then(response => {
-    originRules.value = response
+  originRules.value = await handler.sendBackgroundMessage('GetOriginRules', origin.value)
+}
+
+function handleInjectRuleValues(ruleItems: RuleItemEntity[]) {
+  if (!currentTab.value || currentTab.value.id === undefined) return
+  chrome.scripting.executeScript({
+    target: {tabId: currentTab.value.id},
+    func: (itemsJson: string) => {
+      window["InjectRuleValues"](itemsJson)
+    },
+    args: [JSON.stringify(ruleItems)]
   })
 }
 
-
-async function handleCreate(id: string = '') {
+function handleCreate(id: string = '') {
   if (!currentTab.value || currentTab.value.id === undefined) return
-  await handler.sendMessage({
-    source: 'Popup',
-    target: 'Background',
-    handler: 'EmitContentOpenPageRuleForm',
-    data: {
-      id,
-      tabId: currentTab.value.id
-    }
+  chrome.scripting.executeScript({
+    target: {tabId: currentTab.value.id},
+    func: (ruleData: RuleEntity | Record<string, any>) => {
+      window["CreatePageRuleForm"](ruleData)
+    },
+    args: [{id: id}]
   })
 }
 
@@ -125,12 +126,7 @@ function handleOpenOption(){
 
 async function handleDelete(id: string) {
   if (!id) return false
-  await handler.sendMessage({
-    source: 'Popup',
-    target: 'Background',
-    data: id,
-    handler: 'DeleteRule'
-  })
+  await handler.sendBackgroundMessage('DeleteRule', id)
   loadData()
 }
 

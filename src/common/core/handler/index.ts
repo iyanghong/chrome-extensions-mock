@@ -21,7 +21,7 @@ export type BackgroundHandler =
   | 'removeMockMenu'
   | 'getMockMenu'
 
-  |'injectRuleValues'
+  |'getInjectRuleValues'
 
 export interface IHandler {
   on: (key: string, callback: (response: MessageRequestEntity) => void) => void;

@@ -111,20 +111,14 @@ export default {
   ...pageRuleHandler,
   ...mockHandler,
   ...mockMenuHandler,
-  async injectRuleValues(data: RuleItemInjectEntity[]) {
+  async getInjectRuleValues(data: RuleItemEntity[]) {
     let injectData: RuleItemInjectEntity[] = data.map(rule => {
       return {
         ...rule,
         value: mock.parse(rule.mockKey)
       };
     });
-    let currentTab = await useCurrentTab();
-    let message: MessageRequestEntity = {
-      source: 'Background',
-      target: 'Content',
-      handler: 'InjectRuleValues',
-      data: injectData
-    };
-    return chrome.tabs.sendMessage(<number>currentTab.id, message);
+    console.log('injectData',injectData)
+    return injectData
   }
 };
