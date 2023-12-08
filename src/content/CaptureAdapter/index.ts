@@ -80,7 +80,7 @@ export default class CaptureAdapter {
             mockKey: result.mockKey,
             mockName: result.mockName,
             name: result.name,
-            order: 0,
+            sort: 0,
             realPath: result.realPath,
             tagName: result.tagName,
             type: result.type

@@ -15,7 +15,7 @@ export default class PageRuleStore{
     }
 
     async refresh() {
-        this.rules = await getStorage<RuleEntity[]>(PAGE_RULE_CACHE_KEY, [])
+        this.rules = (await getStorage<RuleEntity[]>(PAGE_RULE_CACHE_KEY, [])).filter(it => it.id)
     }
 
     async saveRule(rule: RuleEntity) {

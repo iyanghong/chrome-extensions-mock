@@ -9,7 +9,7 @@ export interface RuleEntity {
   origin: string // 网站跟地址
   url: string    // URL
   siteTitle: string // 网站标识
-  order: number // 排序
+  sort: number // 排序
   events?: RuleEventEntity[]
   ruleItems: RuleItemEntity[]
 }
@@ -24,7 +24,7 @@ export interface RuleEventEntity {
 
 export interface RuleItemEntity {
   id: string; // 生成随机id
-  order: number; // 排序
+  sort: number; // 排序
   // 元素的标签名
   tagName: string;
   // 规则的中文label
@@ -38,7 +38,7 @@ export interface RuleItemEntity {
   type: PageRuleType | string;
   // mock的名字
   mockName: string;
-  // mock的唯一标识
+  // mock的表达式
   mockKey: string;
 }
 
@@ -59,7 +59,7 @@ export type PageRuleType = 'input' | 'radio' | 'checkbox' | 'select' | 'switch'
 export interface PageRuleItemEntity {
   id: string; // 生成随机id
   url: string;  // 所在页面
-  order: number; // 排序
+  sort: number; // 排序
   // 元素的标签名
   tagName: string;
   // 规则的中文label

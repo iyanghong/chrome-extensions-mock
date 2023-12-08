@@ -4,6 +4,12 @@
              @close="handleClose" :show-icon="false">
         <n-scrollbar style="height: 600px" v-if="formData">
             <n-form v-model:model="formData" label-width="80px" label-placement="left">
+                <n-form-item>
+                    <n-space size="small" justify="center" style="width: 100%">
+                        <n-button type="primary" size="small" @click="handleSave">保存</n-button>
+                        <n-button type="default" size="small" @click="handleClose">取消</n-button>
+                    </n-space>
+                </n-form-item>
                 <n-form-item label="名称">
                     <n-input type="text" v-model:value="formData.name" placeholder="请输入名称"></n-input>
                 </n-form-item>
@@ -65,14 +71,15 @@
     </n-modal>
     <MockMenuModal ref="mockMenuModalRef" :data="treeMockMenuData" @select="handleSelectMenu"></MockMenuModal>
     <MockRuleEventForm ref="mockRuleEventFormRef" @save="handleSaveRuleEvent"></MockRuleEventForm>
+    <MockRuleForm ref="mockRuleFormRef" @save="handleSaveRuleItem"></MockRuleForm>
 </template>
 
 <script setup lang="ts">
 
 import {
+    DataTableColumns,
     NButton,
-    NDivider,
-    NH6,
+    NDataTable,
     NEl,
     NForm,
     NFormItem,
@@ -80,15 +87,18 @@ import {
     NModal,
     NScrollbar,
     NSpace,
+    NTabPane,
     NTabs,
-    NTabPane, NDataTable, NTag, NText, DataTableColumns
+    NTag,
+    NText
 } from "naive-ui";
+import {computed, h, PropType, ref} from "vue";
 import MockRuleEventForm from "./MockRuleEventForm.vue";
-import { computed, h, PropType, ref } from "vue";
-import { RuleEntity, RuleEventEntity, RuleItemEntity } from "@/common/entitys/PageEntity";
-import { MenuTreeEntity } from "@/common/core/generate/menu";
+import MockRuleForm from "./MockRuleForm.vue";
+import {RuleEntity, RuleEventEntity, RuleItemEntity} from "@/common/entitys/PageEntity";
+import {MenuTreeEntity} from "@/common/core/generate/menu";
 import MockMenuModal from "@/common/components/MockMenuModal/index.vue";
-import { IHandler } from "@/common/core/handler";
+import {IHandler} from "@/common/core/handler";
 
 const emit = defineEmits(["close", "save"]);
 const props = defineProps({
@@ -104,7 +114,8 @@ const selectRule = ref<RuleItemEntity>();
 const treeMockMenuData = ref<MenuTreeEntity[]>([]);
 const mockMenuModalRef = ref();
 const mockRuleEventFormRef = ref();
-const activeTab = ref<string>("event");
+const mockRuleFormRef = ref();
+const activeTab = ref<'rule' | 'event'>("rule");
 
 const beforeEventName = ref<string>("");
 const beforeEvents = computed<RuleEventEntity[]>(() => {
@@ -175,9 +186,22 @@ function handleSaveRuleEvent(ruleEvent: RuleEventEntity) {
             return it;
         });
     }
-
 }
 
+function handleSaveRuleItem(rule: RuleItemEntity) {
+    if (!formData.value) return;
+    if (!formData.value.ruleItems) formData.value.ruleItems = [];
+    if (formData.value.ruleItems.filter((it: RuleItemEntity) => it.id == rule.id).length == 0) {
+        formData.value.ruleItems.push(rule);
+    } else {
+        formData.value.ruleItems = formData.value.ruleItems.map(it => {
+            if (it.id == rule.id) {
+                return rule;
+            }
+            return it;
+        });
+    }
+}
 function handleShowMenuSelect(item: RuleItemEntity) {
     selectRule.value = item;
     mockMenuModalRef.value?.open();
@@ -210,7 +234,7 @@ function handleEventItemEdit(ruleEvent: RuleEventEntity) {
 }
 
 function handleRuleItemEdit(ruleItemEntity: RuleItemEntity) {
-
+    mockRuleFormRef.value?.open(ruleItemEntity)
 }
 
 async function handleLoadTreeMenuData() {
@@ -231,8 +255,8 @@ function handleClose() {
     emit("close");
 }
 
-function handleSave(item) {
-    emit("save", item);
+function handleSave() {
+    emit("save", formData.value);
     handleClose();
 }
 

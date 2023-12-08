@@ -11,31 +11,32 @@
                     <n-button type="default" size="small" @click="handleClose">取消</n-button>
                 </n-space>
             </n-form-item>
+            <n-space :wrap="false">
             <n-form-item label="名称" path="name">
                 <n-input type="text" v-model:value="eventData.name" placeholder="请输入名称"></n-input>
             </n-form-item>
             <n-form-item label="事件类型" path="type">
                 <n-select v-model:value="eventData.type" placeholder="请选择事件类型" :options="eventTypes"></n-select>
             </n-form-item>
+            </n-space>
             <n-form-item label="事件内容" path="content">
-                <n-input type="textarea" v-model:value="eventData.content" placeholder="请输入事件内容"></n-input>
+                <CodeEditor v-model="eventData.content" placeholder="请输入事件脚本" language="javascript"></CodeEditor>
             </n-form-item>
         </n-form>
     </n-modal>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
-import { RuleEventEntity } from "@/common/entitys/PageEntity";
-import { NModal, NForm, NFormItem, NSelect, NButton, NInput, NSpace } from "naive-ui";
+import {ref} from "vue";
+import {RuleEventEntity} from "@/common/entitys/PageEntity";
+import {NButton, NForm, NFormItem, NInput, NModal, NSelect, NSpace} from "naive-ui";
 import getUUID from "@/common/utils";
-import { FormRules } from "naive-ui/es/form/src/interface";
-
+import {FormRules} from "naive-ui/es/form/src/interface";
+import CodeEditor from '@/common/components/CodeEditor'
 const emit = defineEmits(["close", "save"]);
 const eventData = ref<RuleEventEntity>();
 const visible = ref<boolean>(false);
 const eventFormRef = ref();
 const eventTypes = ref<any[]>([{ label: "Mock之前", value: "before" }, { label: "Mock之后", value: "after" }]);
-
 const rules = ref<FormRules>({
     name: [
         { required: true, message: "请输入名称", trigger: "blur" },

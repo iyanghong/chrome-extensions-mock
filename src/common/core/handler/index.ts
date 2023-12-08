@@ -27,7 +27,7 @@ export type BackgroundHandler =
 export interface IHandler {
   on: (key: string, callback: (response: MessageRequestEntity) => void) => void;  // 监听消息
   sendMessage: (message: MessageRequestEntity) => Promise<any>;  // 发送消息
-  sendBackgroundMessage: (handler: BackgroundHandler, data: any) => Promise<any>;  // 发送后台消息
+  sendBackgroundMessage: (handler: BackgroundHandler, data: any | null) => Promise<any>;  // 发送后台消息
 }
 
 /**
