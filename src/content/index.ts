@@ -31,7 +31,7 @@ import MockValueInjectAdapter from '@/common/core/MockValueInjectAdapter';
         id: getUUID()
       };
     } else {
-      ruleData = await handler.sendBackgroundMessage('GetPageRule', ruleData.id)
+      ruleData = await handler.sendBackgroundMessage('getPageRule', ruleData.id)
     }
 
     let containerId = `ChromeExtensionsMockContainer_${getUUID()}`;

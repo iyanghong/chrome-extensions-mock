@@ -12,37 +12,22 @@ const menuStore = new MockMenuStore();
 const mock = new Mock();
 
 const pageRuleHandler = {
-  async EmitContentOpenPageRuleForm(data: { id: string, tabId: number }) {
-    let rule: any = pageRuleStore.getRule(data.id);
-    let message: MessageRequestEntity = {
-      source: 'Background',
-      target: 'Content',
-      handler: 'OpenPageRuleFrom',
-      data: rule
-    };
-    try {
-      chrome.tabs.sendMessage(data.tabId, message).then();
-    } catch (e) {
-      console.error(e)
-    }
-    return true
-  },
-  async SavePageRule(data: RuleEntity) {
+  async savePageRule(data: RuleEntity) {
     return pageRuleStore.saveRule(data);
   },
-  async GetOriginRules(origin: string) {
+  async getOriginRules(origin: string) {
     return pageRuleStore.getOriginRule(origin);
   },
-  async GetPageRules(url: string) {
+  async getPageRules(url: string) {
     return pageRuleStore.getPageRule(url);
   },
-  async GetPageRule(id: string) {
+  async getPageRule(id: string) {
     return pageRuleStore.getRule(id);
   },
-  async GetAllPageRule() {
+  async getAllPageRule() {
     return pageRuleStore.getAllRule();
   },
-  async DeleteRule(id: string) {
+  async deleteRule(id: string) {
     return pageRuleStore.removeRule(id);
   }
 };

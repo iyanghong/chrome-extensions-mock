@@ -4,13 +4,12 @@ import {MessageRequestEntity, MessageRequestSourceType} from '@/common/entitys/M
  * BackgroundHandler 是一个类型，表示可以在后台使用的不同类型的处理程序。
  */
 export type BackgroundHandler =
-    'EmitContentOpenPageRuleForm'  // 规则表单打开页面的内容发射
-    | 'SavePageRule'  // 保存页面规则
-    | 'GetOriginRules'  // 获取原始规则
-    | 'GetPageRules'  // 获取页面规则
-    | 'GetPageRule'  // 获取单个页面规则
-    | 'GetAllPageRule'  // 获取所有页面规则
-    | 'DeleteRule'  // 删除规则
+    'savePageRule'  // 保存页面规则
+    | 'getOriginRules'  // 获取原始规则
+    | 'getPageRules'  // 获取页面规则
+    | 'getPageRule'  // 获取单个页面规则
+    | 'getAllPageRule'  // 获取所有页面规则
+    | 'deleteRule'  // 删除规则
     | 'getAllMockEntity'  // 获取所有模拟实体
     | 'getAllMock'  // 获取所有模拟
     | 'getMockValue'  // 获取模拟值

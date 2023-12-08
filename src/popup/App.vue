@@ -95,7 +95,7 @@ onMounted(async () => {
 
 async function loadData() {
   console.log('origin.value', origin.value)
-  originRules.value = await handler.sendBackgroundMessage('GetOriginRules', origin.value)
+  originRules.value = await handler.sendBackgroundMessage('getOriginRules', origin.value)
 }
 
 function handleInjectRuleValues(ruleItems: RuleItemEntity[]) {
@@ -126,7 +126,7 @@ function handleOpenOption(){
 
 async function handleDelete(id: string) {
   if (!id) return false
-  await handler.sendBackgroundMessage('DeleteRule', id)
+  await handler.sendBackgroundMessage('deleteRule', id)
   loadData()
 }
 

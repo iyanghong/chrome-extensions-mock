@@ -51,7 +51,7 @@ function handleSave() {
     return;
   }
   let data = JSON.parse(JSON.stringify(ruleData.value));
-  globalProperties.sendMessageToBackground('SavePageRule', data);
+  globalProperties.sendMessageToBackground('savePageRule', data);
   handleClose();
 }
 

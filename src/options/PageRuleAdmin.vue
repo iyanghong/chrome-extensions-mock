@@ -101,7 +101,7 @@ let columns: DataTableColumns<RuleEntity> = [
 ];
 
 async function loadData() {
-  let response = await handler.value.sendBackgroundMessage('GetAllPageRule');
+  let response = await handler.value.sendBackgroundMessage('getAllPageRule');
 
   console.log('response = ', response);
   dataList.value = response;
@@ -112,12 +112,12 @@ function handleEdit(rule: RuleEntity) {
 }
 
 async function handleSave(rule: RuleEntity) {
-  await handler.value.sendBackgroundMessage('SavePageRule', rule)
+  await handler.value.sendBackgroundMessage('savePageRule', rule)
   await loadData()
 }
 
 async function handleDelete(id: string) {
-  await handler.value.sendBackgroundMessage('DeleteRule', id);
+  await handler.value.sendBackgroundMessage('deleteRule', id);
   await loadData();
 }
 
