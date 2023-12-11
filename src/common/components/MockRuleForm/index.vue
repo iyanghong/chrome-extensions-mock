@@ -71,7 +71,7 @@
     </n-modal>
     <MockMenuModal ref="mockMenuModalRef" :data="treeMockMenuData" @select="handleSelectMenu"></MockMenuModal>
     <MockRuleEventForm ref="mockRuleEventFormRef" @save="handleSaveRuleEvent"></MockRuleEventForm>
-    <MockRuleForm ref="mockRuleFormRef" @save="handleSaveRuleItem"></MockRuleForm>
+    <MockRuleForm ref="mockRuleFormRef" @save="handleSaveRuleItem" :handler="handler"></MockRuleForm>
 </template>
 
 <script setup lang="ts">
