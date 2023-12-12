@@ -1,18 +1,11 @@
 {
   "name": "mock",
   "version": "2.0",
-  "description": "基于Vite的chrome插件V3 Demo",
+  "description": "基于Vite的chrome插件-模拟数据",
   "manifest_version": 3,
   "background": {
-    "service_worker": "background/index.js"
-  },
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; frame-ancestors 'none';"
-  },
-  "externally_connectable": {
-    "ids": [
-      "*"
-    ]
+    "service_worker": "background/index.js",
+    "type": "module"
   },
   "permissions": [
     "contextMenus",
@@ -24,24 +17,9 @@
     "storage",
     "notifications"
   ],
-  "host_permissions": ["*://*/*"],
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "/favicon.ico"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    },
-    {
-      "resources": [
-        "content/index.js"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    }
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
   ],
   "content_scripts": [
     {
@@ -65,7 +43,7 @@
       "64": "icon/icon-64.png",
       "128": "icon/icon-128.png"
     },
-    "default_title": "Vue CRX MV3"
+    "default_title": "mock"
   },
   "icons": {
     "16": "icon/icon-16.png",
