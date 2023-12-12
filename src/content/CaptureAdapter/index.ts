@@ -72,6 +72,7 @@ export default class CaptureAdapter {
       if (e.target) {
         //@ts-ignore
         const result = this.resolve(e.target);
+        // console.log('result => ',result)
         if (result && !this.ruleData.value.ruleItems.filter(it => it.realPath == result.realPath)[0]) {
           this.ruleData.value.ruleItems.push({
             adapter: result.adapter,
