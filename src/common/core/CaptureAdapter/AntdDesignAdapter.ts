@@ -1,7 +1,7 @@
-import AdapterInterface, {AdapterResolveItem} from "@/content/CaptureAdapter/AdapterInterface";
+import AdapterInterface, {AdapterResolveItem} from "./AdapterInterface";
 
-export default class NaiveUIAdapter implements AdapterInterface {
-    adapterName = 'NaiveUI';
+export default class AntdDesignAdapter implements AdapterInterface{
+    adapterName = 'AntdDesign';
 
     checkbox(target: Element): AdapterResolveItem | undefined {
         return undefined;
@@ -22,6 +22,8 @@ export default class NaiveUIAdapter implements AdapterInterface {
     switch(target: Element): AdapterResolveItem | undefined {
         return undefined;
     }
+
+
 
 
 

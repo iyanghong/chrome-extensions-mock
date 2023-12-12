@@ -1,7 +1,7 @@
 /**
  * Importing necessary interfaces and utility functions
  */
-import AdapterInterface, { AdapterResolveItem } from '@/content/CaptureAdapter/AdapterInterface';
+import AdapterInterface, { AdapterResolveItem } from './AdapterInterface';
 import { getDomPath, getFormItemTypeText, getInputPlaceholder } from '@/content/util';
 
 /**

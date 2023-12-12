@@ -1,9 +1,9 @@
-import AdapterInterface, {AdapterResolveItem} from '@/content/CaptureAdapter/AdapterInterface';
-import BaseAdapter from '@/content/CaptureAdapter/BaseAdapter';
-import ElementUiAdapter from '@/content/CaptureAdapter/ElementUiAdapter';
-import AntdDesignAdapter from '@/content/CaptureAdapter/AntdDesignAdapter';
-import NaiveUIAdapter from '@/content/CaptureAdapter/NaiveUIAdapter';
-import MiniUIAdapter from '@/content/CaptureAdapter/MiniUIAdapter';
+import AdapterInterface, {AdapterResolveItem} from './AdapterInterface';
+import BaseAdapter from './BaseAdapter';
+import ElementUiAdapter from './ElementUiAdapter';
+import AntdDesignAdapter from './AntdDesignAdapter';
+import NaiveUIAdapter from './NaiveUIAdapter';
+import MiniUIAdapter from './MiniUIAdapter';
 import {EventListener} from '@/common/utils/DomUtils';
 import getUUID from "@/common/utils";
 import {IGlobalProperties} from "@/content/GlobalProperties";

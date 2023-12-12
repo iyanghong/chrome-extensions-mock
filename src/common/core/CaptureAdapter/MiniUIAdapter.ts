@@ -1,4 +1,4 @@
-import AdapterInterface, {AdapterResolveItem} from "@/content/CaptureAdapter/AdapterInterface";
+import AdapterInterface, {AdapterResolveItem} from "./AdapterInterface";
 import {getDomPath, getFormItemTypeText, getInputPlaceholder} from "@/content/util";
 
 export default class MiniUIAdapter implements AdapterInterface {

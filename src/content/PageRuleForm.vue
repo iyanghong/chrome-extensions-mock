@@ -32,7 +32,7 @@ import { NScrollbar,NSpace,NButton,NEl,NInput,NText } from 'naive-ui';
 import Modal from '@/common/components/Modal/index.vue';
 import { getCurrentInstance, ref } from 'vue';
 import GlobalProperties, { IGlobalProperties } from '@/content/GlobalProperties';
-import CaptureAdapter from '@/content/CaptureAdapter';
+import CaptureAdapter from '@/common/core/CaptureAdapter';
 import MockMenuModal from '@/common/components/MockMenuModal/index.vue';
 import { MenuTreeEntity } from '@/common/core/generate/menu';
 import { RuleItemEntity } from '@/common/entitys/PageEntity';
