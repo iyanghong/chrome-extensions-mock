@@ -1,7 +1,7 @@
 export function getInputPlaceholder(el): string {
   if (!el.getAttribute('placeholder')) return '';
   let placeholder = el.getAttribute('placeholder');
-  let replaceText = ['请输入', '请选择', 'please enter', 'please select', 'Please select', 'Please enter'];
+  let replaceText = ['输入', '请输入', '选择', '请选择', 'please enter', 'please select', 'Please select', 'Please enter'];
   for (let value of replaceText) {
     placeholder = placeholder.replace(value, '');
   }
