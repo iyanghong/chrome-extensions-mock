@@ -1,4 +1,4 @@
-import { AdapterResolveItem } from '@/content/CaptureAdapter/AdapterInterface';
+import { AdapterResolveItem } from '@/common/core/CaptureAdapter/AdapterInterface';
 import { RuleItemInjectEntity } from '@/common/entitys/PageEntity';
 
 export interface IAdapter {

@@ -10,3 +10,4 @@ export function getContextDocument(context: string[]) {
   }
   return doc;
 }
+
