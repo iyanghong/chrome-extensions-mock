@@ -27,7 +27,6 @@ export default class NaiveUIAdapter extends BaseAdapter {
     let el = getContextDocument(rule.context).querySelector(rule.realPath)
     if (!el) return
     let elList = el.querySelectorAll('.n-radio-input')
-    console.log('elList = ', elList)
     this.clickOnEnElement(elList)
   }
 

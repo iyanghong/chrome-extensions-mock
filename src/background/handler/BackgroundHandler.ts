@@ -60,10 +60,8 @@ const mockHandler = {
         if (focusedElement) {
           // @ts-ignore
           focusedElement.value = val;
-          const event = document.createEvent('HTMLEvents');
-          event.initEvent('input', false, true);
-          event.initEvent('change', false, true);
-          focusedElement.dispatchEvent(event);
+          focusedElement.dispatchEvent(new Event('input'))
+          focusedElement.dispatchEvent(new Event('change'))
         }
         return true;
       },
