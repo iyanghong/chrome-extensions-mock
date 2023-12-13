@@ -35,7 +35,7 @@ export default class CaptureAdapter {
 
   resolve(target: Element, basePath: string): AdapterResolveItem | undefined {
     if (this.checkIsContainer(target, basePath)) return undefined;
-    console.log('target => ', target);
+    // console.log('target => ', target);
     for (const adapter of this.adapterList) {
       let result: AdapterResolveItem | undefined = undefined;
       result = adapter.select(target);
@@ -72,8 +72,8 @@ export default class CaptureAdapter {
       if (e.target) {
         //@ts-ignore
         const result = this.resolve(e.target);
-        // console.log('result => ',result)
         if (result && !this.ruleData.value.ruleItems.filter(it => it.realPath == result.realPath)[0]) {
+          // console.log('result => ',result)
           this.ruleData.value.ruleItems.push({
             adapter: result.adapter,
             id: getUUID(),
