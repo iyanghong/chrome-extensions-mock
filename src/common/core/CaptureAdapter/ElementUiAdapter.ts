@@ -1,8 +1,8 @@
 /**
  * Importing necessary interfaces and utility functions
  */
-import AdapterInterface, { AdapterResolveItem } from './AdapterInterface';
-import { getDomPath, getFormItemTypeText, getInputPlaceholder } from '@/content/util';
+import AdapterInterface, {AdapterResolveItem} from './AdapterInterface';
+import {getDomPath, getFormItemTypeText, getInputPlaceholder} from '@/content/util';
 
 /**
  * Class ElementUiAdapter implementing AdapterInterface
@@ -17,13 +17,14 @@ export default class ElementUiAdapter implements AdapterInterface {
    * @param {number} deep - The depth to search for the label
    * @returns {string} - The label text
    */
-  getFormItemLabel(el, deep: number = 4): string {
+  getFormItemLabel(el: Element | HTMLElement, deep: number = 4): string {
     while (deep > 0) {
       if (el.classList.contains('el-form-item')) {
-        return el.querySelector('.el-form-item__label')?.innerText;
+        return (el.querySelector('.el-form-item__label') as HTMLElement).innerText;
       }
       deep--;
-      el = el.parentNode;
+      if (!el || !el.parentElement) return ''
+      el = el.parentElement;
     }
     return '';
   }
@@ -59,8 +60,8 @@ export default class ElementUiAdapter implements AdapterInterface {
     if (!target.classList.contains('el-checkbox__label') && !target.classList.contains('el-checkbox__inner')) {
       return undefined;
     }
-    if (target.parentNode?.parentNode) target = target.parentNode.parentNode as Element;
-    if (target.classList.contains('el-checkbox') && target.parentNode) target = target.parentNode as Element;
+    if (target.parentElement?.parentElement) target = target.parentElement.parentElement as Element;
+    if (target.classList.contains('el-checkbox') && target.parentElement) target = target.parentElement as Element;
     let type = 'checkbox';
     return this.resolveAdapterItem(target, type,' .el-checkbox__original');
   }
@@ -84,8 +85,8 @@ export default class ElementUiAdapter implements AdapterInterface {
     if (!target.classList.contains('el-radio__label') && !target.classList.contains('el-radio__inner')) {
       return undefined;
     }
-    if (target.parentNode?.parentNode) target = target.parentNode.parentNode as Element;
-    if (target.classList.contains('el-radio') && target.parentNode) target = target.parentNode as Element;
+    if (target.parentElement?.parentElement) target = target.parentElement.parentElement as Element;
+    if (target.classList.contains('el-radio') && target.parentElement) target = target.parentElement as Element;
     return this.resolveAdapterItem(target, 'radio',' .el-radio__original');
   }
 
@@ -96,11 +97,11 @@ export default class ElementUiAdapter implements AdapterInterface {
    */
   select(target: Element): AdapterResolveItem | undefined {
     // @ts-ignore
-    if (!(target.classList.contains('el-input__inner') && target.parentNode?.parentNode?.classList?.contains('el-select')) && !target.classList.contains('el-select__tags')) {
+    if (!(target.classList.contains('el-input__inner') && target.parentElement?.parentElement?.classList?.contains('el-select')) && !target.classList.contains('el-select__tags')) {
       return undefined;
     }
-    target = target.parentNode as Element;
-    if (!target.classList.contains('el-select__tags')) target = target.parentNode as Element;
+    target = target.parentElement as Element;
+    if (!target.classList.contains('el-select__tags')) target = target.parentElement as Element;
     let type = 'select';
     return this.resolveAdapterItem(target, type);
   }

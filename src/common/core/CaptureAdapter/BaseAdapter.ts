@@ -5,9 +5,8 @@ export default class BaseAdapter implements AdapterInterface{
     adapterName = "Base"
 
     checkbox(target:Element): AdapterResolveItem | undefined {
-        if (target.tagName === 'INPUT' && target.getAttribute('type') === 'checkbox') {
-            // @ts-ignore
-            target = target.parentNode
+        if (target.tagName === 'INPUT' && target.getAttribute('type') === 'checkbox' && target.parentElement) {
+            target = target.parentElement
             return this.getRuleItem('checkbox', target, ' input[type="checkbox"]')
         }
         return undefined;
@@ -21,9 +20,8 @@ export default class BaseAdapter implements AdapterInterface{
     }
 
     radio(target: Element): AdapterResolveItem | undefined {
-        if (target.tagName === 'INPUT' && target.getAttribute('type') === 'radio') {
-            // @ts-ignore
-            target = target.parentNode
+        if (target.tagName === 'INPUT' && target.getAttribute('type') === 'radio' && target.parentElement) {
+            target = target.parentElement
             return this.getRuleItem('radio', target, ' input[type="radio"]')
         }
         return undefined;
