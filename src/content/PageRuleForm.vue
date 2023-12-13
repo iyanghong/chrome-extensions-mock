@@ -11,7 +11,7 @@
           <n-space size='small' :wrap='false' align='center'>
             <n-input type='text' size='small' v-model:value='item.name' placeholder='请输入规则名'
                      style='width: 120px'></n-input>
-            <n-el style='width: 80px;' @click='handleShowMenuSelect(item)'>{{ item.mockName || '请选择' }}</n-el>
+            <n-el style='width: 80px;cursor: pointer' @click='handleShowMenuSelect(item)'>{{ item.mockName || '请选择' }}</n-el>
             <n-button text type='error' size='small' @click='handleDelete(item)'>删除</n-button>
           </n-space>
         </n-el>

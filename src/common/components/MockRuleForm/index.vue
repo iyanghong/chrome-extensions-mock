@@ -21,7 +21,7 @@
                                     <n-input type="text" size="small" v-model:value="item.name"
                                              placeholder="请输入规则名"
                                              style="width: 120px"></n-input>
-                                    <n-el style="width: 80px;" @click="handleShowMenuSelect(item)">
+                                    <n-el style="width: 80px;cursor: pointer" @click="handleShowMenuSelect(item)">
                                         {{ item.mockName || "请选择" }}
                                     </n-el>
                                     <n-button text type="info" size="small" @click="handleRuleItemEdit(item)">编辑
