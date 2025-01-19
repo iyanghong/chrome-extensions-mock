@@ -1,7 +1,7 @@
 export interface IStore<Entity, TreeEntity extends Entity> {
   data: Entity[];
   get: (id: string) => Entity | null;
-  getAll: () => Entity[];
+  getAll: () => Promise<Entity[]>;
   getTreeData: () => TreeEntity[];
   remove: (id: string) => Promise<void>;
   save: (t: Entity) => Promise<void>;

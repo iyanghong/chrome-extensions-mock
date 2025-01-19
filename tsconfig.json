@@ -29,7 +29,8 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "src/manifest.tst.ts"
+    "src/manifest.tst.ts",
+    "types/**/*.d.ts"
   ],
   "exclude": ["./src/background.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]

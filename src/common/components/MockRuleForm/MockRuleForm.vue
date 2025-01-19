@@ -114,5 +114,8 @@ defineExpose({
 
 
 <style scoped>
-
+:deep(div){
+  width: auto;
+  margin: 0;
+}
 </style>

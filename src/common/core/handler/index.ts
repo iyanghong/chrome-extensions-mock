@@ -10,6 +10,8 @@ export type BackgroundHandler =
     | 'getPageRule'  // 获取单个页面规则
     | 'getAllPageRule'  // 获取所有页面规则
     | 'deleteRule'  // 删除规则
+    | 'setAllRule'  // 保存所有规则
+    | 'getCookie'
     | 'getAllMockEntity'  // 获取所有模拟实体
     | 'getAllMock'  // 获取所有模拟
     | 'getMockValue'  // 获取模拟值

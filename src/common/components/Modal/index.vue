@@ -126,6 +126,10 @@ function handleClose() {
 </script>
 
 <style scoped lang="scss">
+:deep(div){
+  width: auto;
+  margin: 0;
+}
 :deep(.n-card-header),:deep(.n-card__content)  {
   padding: 10px !important;
 }

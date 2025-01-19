@@ -49,7 +49,6 @@ chrome.runtime.onMessage.addListener(function(request: MessageRequestEntity, sen
  */
 chrome.runtime.onInstalled.addListener(async () => {
     console.log('background installed');
-
     /**
      * Get all mock menus and add them to the chrome context menu
      */
@@ -66,6 +65,8 @@ chrome.runtime.onInstalled.addListener(async () => {
         }
         chrome.contextMenus.create(menuData);
     });
+
+
 });
 
 /**

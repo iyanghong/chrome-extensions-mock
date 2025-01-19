@@ -4,10 +4,10 @@ import App from './App.vue';
 import NaiveUi from '../plugins/NaiveUi';
 import getUUID from '@/common/utils';
 import {RuleEntity, RuleItemEntity, RuleItemInjectEntity} from '@/common/entitys/PageEntity';
-import MockValueInjectAdapter from '@/common/core/MockValueInjectAdapter';
+import { MockValueInjectAdapter } from '@/common/core/UIAdapter';
+
 
 (() => {
-
   window["PageRuleForm"] = function () {
     console.log("PageRuleForm")
   }
@@ -49,6 +49,7 @@ import MockValueInjectAdapter from '@/common/core/MockValueInjectAdapter';
       events.value.forEach((item) => {
         if (item) item.remove();
       });
+      events.value = []
       document.body.removeChild(container);
     };
     app.use(NaiveUi);

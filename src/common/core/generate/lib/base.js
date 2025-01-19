@@ -68,6 +68,7 @@ export default {
      */
     idiomsPlus(minNum = 1, maxNum = 10, separator = '') {
         let len = getRandomNumber(minNum, maxNum)
+        console.log(len);
         let list = []
         for (let i = 0; i < len; i++) {
             let index = Math.round(Math.random() * idioms.length);

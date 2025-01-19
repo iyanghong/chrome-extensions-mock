@@ -1,58 +1,65 @@
-import {RuleEntity} from "../entitys/PageEntity";
-import {getStorage, setStorage} from "../utils/cache";
+import { RuleEntity } from '../entitys/PageEntity';
+import { getStorage, setStorage } from '../utils/cache';
 
-const PAGE_RULE_CACHE_KEY = 'PageRule'
+const PAGE_RULE_CACHE_KEY = 'PageRule';
 
-export default class PageRuleStore{
-    rules: RuleEntity[] = []
+export default class PageRuleStore {
+  rules: RuleEntity[] = [];
+  isInitialized: boolean = false;
+  constructor() {
+    this.refresh().then();
+  }
 
-    constructor() {
-        this.refresh().then()
+  async doCache() {
+    await setStorage(PAGE_RULE_CACHE_KEY, this.rules);
+  }
+
+  async refresh() {
+    this.rules = (await getStorage<RuleEntity[]>(PAGE_RULE_CACHE_KEY, [])).filter(it => it.id);
+    this.isInitialized = true;
+  }
+
+  async saveRule(rule: RuleEntity) {
+    let checkRule = this.rules.filter(it => it.id == rule.id)[0];
+    if (checkRule) {
+      this.rules = this.rules.map(it => {
+        if (it.id == rule.id) return rule;
+        return it;
+      });
+    } else {
+      this.rules.push(rule);
     }
+    await this.doCache();
+  }
 
-    async doCache() {
-        await setStorage(PAGE_RULE_CACHE_KEY, this.rules)
-    }
+  async removeRule(id: string) {
+    this.rules = this.rules.filter(it => it.id != id);
+    await this.doCache();
+  }
 
-    async refresh() {
-        this.rules = (await getStorage<RuleEntity[]>(PAGE_RULE_CACHE_KEY, [])).filter(it => it.id)
-    }
+  getRule(id: string) {
+    let rule = this.rules.filter(it => it.id == id)[0];
+    if (!rule) rule = { id: '' } as RuleEntity;
+    return rule;
+  }
 
-    async saveRule(rule: RuleEntity) {
-        let checkRule = this.rules.filter(it => it.id == rule.id)[0]
-        if (checkRule) {
-            this.rules = this.rules.map(it => {
-                if (it.id == rule.id) return rule
-                return it
-            })
-        }else {
-            this.rules.push(rule)
-        }
-        await this.doCache()
-    }
+  // 获取网站跟地址的所有规则
+  async getOriginRule(origin: string) {
+    if(!this.isInitialized) await this.refresh();
+    return this.rules.filter(rule => rule.origin == origin);
+  }
 
-    async removeRule(id: string) {
-        this.rules = this.rules.filter(it => it.id != id)
-        await this.doCache()
-    }
+  //获取当前页面规则
+  getPageRule(url: string) {
+    return this.rules.filter(rule => rule.url == url);
+  }
 
-    getRule(id: string) {
-        let rule = this.rules.filter(it => it.id == id)[0]
-        if (!rule) rule = {id: ''} as RuleEntity
-        return rule
-    }
+  getAllRule() {
+    return this.rules;
+  }
 
-    // 获取网站跟地址的所有规则
-    getOriginRule(origin: string) {
-        return this.rules.filter(rule => rule.origin == origin)
-    }
-
-    //获取当前页面规则
-    getPageRule(url: string) {
-        return this.rules.filter(rule => rule.url == url)
-    }
-
-    getAllRule() {
-        return this.rules
-    }
+  async setAllRule(rules) {
+    this.rules = rules;
+    await this.doCache();
+  }
 }

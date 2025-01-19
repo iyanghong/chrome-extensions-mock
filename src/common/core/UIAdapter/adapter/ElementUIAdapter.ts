@@ -1,16 +1,13 @@
-/**
- * Importing necessary interfaces and utility functions
- */
-import AdapterInterface, {AdapterResolveItem} from './AdapterInterface';
-import {getDomPath, getFormItemTypeText, getInputPlaceholder} from '@/content/util';
 
-/**
- * Class ElementUiAdapter implementing AdapterInterface
- * This class provides methods to interact with Element UI components
- */
-export default class ElementUiAdapter implements AdapterInterface {
+import AdapterInterface, { AdapterResolveItem } from '@/common/core/UIAdapter/AdapterInterface';
+import { getDomPath, getFormItemTypeText, getInputPlaceholder } from '@/content/util';
+import TaskQueue from '@/common/utils/TaskQueue';
+import { RuleItemInjectEntity } from '@/common/entitys/PageEntity';
+import BaseMockInjectAdapter from '@/common/core/UIAdapter/BaseMockInjectAdapter';
+
+export default class ElementUIAdapter extends BaseMockInjectAdapter implements AdapterInterface {
   adapterName = 'ElementUI';
-
+  selectQueue = new TaskQueue();
   /**
    * Method to get the form item label
    * @param {Element} el - The element to get the label from
@@ -23,7 +20,7 @@ export default class ElementUiAdapter implements AdapterInterface {
         return (el.querySelector('.el-form-item__label') as HTMLElement).innerText;
       }
       deep--;
-      if (!el || !el.parentElement) return ''
+      if (!el || !el.parentElement) return '';
       el = el.parentElement;
     }
     return '';
@@ -56,14 +53,14 @@ export default class ElementUiAdapter implements AdapterInterface {
    * @param {Element} target - The target element
    * @returns {AdapterResolveItem | undefined} - The resolved adapter item
    */
-  checkbox(target: Element): AdapterResolveItem | undefined {
+  captureCheckbox(target: Element): AdapterResolveItem | undefined {
     if (!target.classList.contains('el-checkbox__label') && !target.classList.contains('el-checkbox__inner')) {
       return undefined;
     }
     if (target.parentElement?.parentElement) target = target.parentElement.parentElement as Element;
     if (target.classList.contains('el-checkbox') && target.parentElement) target = target.parentElement as Element;
     let type = 'checkbox';
-    return this.resolveAdapterItem(target, type,' .el-checkbox__original');
+    return this.resolveAdapterItem(target, type, ' .el-checkbox__original');
   }
 
   /**
@@ -71,7 +68,7 @@ export default class ElementUiAdapter implements AdapterInterface {
    * @param {Element} target - The target element
    * @returns {AdapterResolveItem | undefined} - The resolved adapter item
    */
-  input(target: Element): AdapterResolveItem | undefined {
+  captureInput(target: Element): AdapterResolveItem | undefined {
     if (!target.classList.contains('el-input__inner') && !target.classList.contains('el-textarea__inner')) return undefined;
     return this.resolveAdapterItem(target, 'input');
   }
@@ -81,13 +78,13 @@ export default class ElementUiAdapter implements AdapterInterface {
    * @param {Element} target - The target element
    * @returns {AdapterResolveItem | undefined} - The resolved adapter item
    */
-  radio(target: Element): AdapterResolveItem | undefined {
+  captureRadio(target: Element): AdapterResolveItem | undefined {
     if (!target.classList.contains('el-radio__label') && !target.classList.contains('el-radio__inner')) {
       return undefined;
     }
     if (target.parentElement?.parentElement) target = target.parentElement.parentElement as Element;
     if (target.classList.contains('el-radio') && target.parentElement) target = target.parentElement as Element;
-    return this.resolveAdapterItem(target, 'radio',' .el-radio__original');
+    return this.resolveAdapterItem(target, 'radio', ' .el-radio__original');
   }
 
   /**
@@ -95,7 +92,7 @@ export default class ElementUiAdapter implements AdapterInterface {
    * @param {Element} target - The target element
    * @returns {AdapterResolveItem | undefined} - The resolved adapter item
    */
-  select(target: Element): AdapterResolveItem | undefined {
+  captureSelect(target: Element): AdapterResolveItem | undefined {
     // @ts-ignore
     if (!(target.classList.contains('el-input__inner') && target.parentElement?.parentElement?.classList?.contains('el-select')) && !target.classList.contains('el-select__tags')) {
       return undefined;
@@ -111,11 +108,44 @@ export default class ElementUiAdapter implements AdapterInterface {
    * @param {Element} target - The target element
    * @returns {AdapterResolveItem | undefined} - The resolved adapter item
    */
-  switch(target: Element): AdapterResolveItem | undefined {
+  captureSwitch(target: Element): AdapterResolveItem | undefined {
     if (!target.classList.contains('el-switch__core')) {
       return undefined;
     }
     let type = 'switch';
     return this.resolveAdapterItem(target, type);
+  }
+
+
+
+
+  mockInjectSelect(rule: RuleItemInjectEntity) {
+    this.selectQueue.addTask(() => new Promise<void>(resolve => {
+      let doc = this.getContextDocument(rule.context);
+      let el = doc.querySelector(rule.realPath);
+      if (!el) {
+        resolve();
+        return;
+      }
+      el.dispatchEvent(new Event('click'));
+      setTimeout(() => {
+        let elSelectPopperList = doc.querySelectorAll('.el-select-dropdown.el-popper');
+        // @ts-ignore
+        for (let item of elSelectPopperList) {
+          let isMultiple = item.classList.contains('is-multiple');
+          if (getComputedStyle(item).display !== 'none') {
+            let elSelectOptionList = item.querySelectorAll('.el-select-dropdown__item');
+            if (elSelectOptionList.length) {
+              if (isMultiple) {
+                this.clickOnRandomAnyElement(elSelectOptionList)
+              } else {
+                this.clickOnEnElement(elSelectOptionList)
+              }
+            }
+          }
+        }
+        resolve();
+      }, 100);
+    }));
   }
 }

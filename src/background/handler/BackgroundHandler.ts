@@ -1,10 +1,11 @@
-import {MessageRequestEntity} from '@/common/entitys/MessageType';
+import { MessageRequestEntity } from '@/common/entitys/MessageType';
 import PageRuleStoreService from '@/common/store/PageRuleStore';
-import {RuleEntity, RuleItemEntity, RuleItemInjectEntity} from '@/common/entitys/PageEntity';
+import { RuleEntity, RuleItemEntity, RuleItemInjectEntity } from '@/common/entitys/PageEntity';
 import Mock from '@/common/core/generate/index';
 import MockMenuStore from '@/common/store/MockMenuStore';
-import {MenuEntity} from '@/common/core/generate/menu';
-import {useCurrentTab} from '@/common/utils/ChromeUtil';
+import { MenuEntity } from '@/common/core/generate/menu';
+import { useCurrentTab } from '@/common/utils/ChromeUtil';
+import { c } from 'naive-ui';
 
 const pageRuleStore = new PageRuleStoreService();
 const menuStore = new MockMenuStore();
@@ -15,8 +16,11 @@ const pageRuleHandler = {
   async savePageRule(data: RuleEntity) {
     return pageRuleStore.saveRule(data);
   },
+  async refreshPageRule() {
+    await pageRuleStore.refresh();
+  },
   async getOriginRules(origin: string) {
-    return pageRuleStore.getOriginRule(origin);
+    return await pageRuleStore.getOriginRule(origin);
   },
   async getPageRules(url: string) {
     return pageRuleStore.getPageRule(url);
@@ -29,6 +33,22 @@ const pageRuleHandler = {
   },
   async deleteRule(id: string) {
     return pageRuleStore.removeRule(id);
+  },
+  async setAllRule(rules: RuleEntity[]) {
+    return pageRuleStore.setAllRule(rules);
+  },
+  getCookie(name: string) {
+    return new Promise<any>(resolve => {
+      useCurrentTab().then(tab => {
+        const url = new URL(tab.url as string);
+        chrome.cookies.get({
+          url: url.origin,
+          name: name
+        }, (cookie => {
+          resolve(cookie);
+        }));
+      })
+    });
   }
 };
 
@@ -60,8 +80,8 @@ const mockHandler = {
         if (focusedElement) {
           // @ts-ignore
           focusedElement.value = val;
-          focusedElement.dispatchEvent(new Event('input'))
-          focusedElement.dispatchEvent(new Event('change'))
+          focusedElement.dispatchEvent(new Event('input'));
+          focusedElement.dispatchEvent(new Event('change'));
         }
         return true;
       },
@@ -75,7 +95,10 @@ const mockHandler = {
 
 const mockMenuHandler = {
   async getAllMockMenu() {
-    return menuStore.getAll();
+    return await menuStore.getAll();
+  },
+  async refreshMockMenu() {
+    await menuStore.refresh();
   },
   async getTreeMockMenuData() {
     return menuStore.getTreeData();
@@ -101,7 +124,7 @@ export default {
         value: mock.parse(rule.mockKey)
       };
     });
-    console.log('injectData',injectData)
-    return injectData
+    console.log('injectData', injectData);
+    return injectData;
   }
 };

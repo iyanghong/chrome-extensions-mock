@@ -1,5 +1,5 @@
 <template>
-  <n-modal class="ChromeExtensionsMockContainer_SelectMock" preset='dialog' v-model:show='visible' title='规则菜单' style='width: 600px' :z-index='999999'
+  <n-modal class="ChromeExtensionsMockContainer_SelectMock" preset='dialog' v-model:show='visible' title='规则菜单' style='width: 600px;width: auto' :z-index='999999'
            @close='handleClose' :show-icon='false'>
     <n-scrollbar style='height: 500px'>
       <MenuItem v-for='item in menus' :key='item.id' :data='item' @item-click='handleSelect'></MenuItem>
@@ -69,5 +69,15 @@ defineExpose({
 
 
 <style scoped>
-
+:deep(div),
+:deep(.n-modal-mask),
+:deep(.n-scrollbar),
+:deep(.n-scrollbar-container)
+{
+  width: auto;
+  margin: 0;
+}
+:deep(.n-modal-body-wrapper){
+  width: auto;
+}
 </style>

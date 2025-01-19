@@ -1,13 +1,13 @@
 <template>
-  <Modal title='编辑规则' @close='handleClose'>
-    <n-space :wrap='false' align='center'>
+  <Modal title='编辑规则' @close='handleClose' class="page-rule-form-modal" style="width: 300px!important">
+    <n-space :wrap='false' align='center' style="width: 300px">
       <n-text>名称：</n-text>
       <n-input type='text' size='small' placeholder='请输入名称' v-model:value='ruleData.name'></n-input>
     </n-space>
     <n-text class='description'>注：点击页面上的控件来添加控件</n-text>
-    <n-scrollbar style='height: 500px'>
+    <n-scrollbar style='height: 500px;width: 300px'>
       <n-space vertical>
-        <n-el v-for='item in ruleData.ruleItems' :key='item.id' class='rule-item'>
+        <n-el v-for='item in ruleData.ruleItems' :key='item.id' class='rule-item' style="width: 300px">
           <n-space size='small' :wrap='false' align='center'>
             <n-input type='text' size='small' v-model:value='item.name' placeholder='请输入规则名'
                      style='width: 120px'></n-input>
@@ -19,7 +19,7 @@
       </n-space>
     </n-scrollbar>
 
-    <n-space justify='space-around'>
+    <n-space justify='space-around' content-style="width: unset">
       <n-button size='small' type='default' @click='handleClose'>取消</n-button>
       <n-button size='small' type='info' @click='handleMock'>Mock</n-button>
       <n-button size='small' type='primary' @click='handleSave'>保存</n-button>
@@ -32,10 +32,10 @@ import { NScrollbar,NSpace,NButton,NEl,NInput,NText } from 'naive-ui';
 import Modal from '@/common/components/Modal/index.vue';
 import { getCurrentInstance, ref } from 'vue';
 import GlobalProperties, { IGlobalProperties } from '@/content/GlobalProperties';
-import CaptureAdapter from '@/common/core/CaptureAdapter';
 import MockMenuModal from '@/common/components/MockMenuModal/index.vue';
 import { MenuTreeEntity } from '@/common/core/generate/menu';
-import { RuleItemEntity } from '@/common/entitys/PageEntity';
+import { RuleItemEntity, RuleItemInjectEntity } from '@/common/entitys/PageEntity';
+import { CaptureAdapter, MockValueInjectAdapter } from '@/common/core/UIAdapter';
 
 //@ts-ignore
 const globalProperties: IGlobalProperties = new GlobalProperties(getCurrentInstance());
@@ -59,10 +59,12 @@ function handleDelete(ruleItemEntity: RuleItemEntity) {
   ruleData.value.ruleItems = ruleData.value.ruleItems.filter(it => it.id != ruleItemEntity.id);
 }
 
-function handleMock() {
-  globalProperties.sendMessageToBackground('injectRuleValues', ruleData.value.ruleItems);
-}
+async function handleMock() {
+  let data: RuleItemInjectEntity[] =  await globalProperties.sendMessageToBackground('getInjectRuleValues', ruleData.value.ruleItems)
+  const adapter = new MockValueInjectAdapter();
+  adapter.inject(data);
 
+}
 /**
  * 递归注册监听器，递归所有iframe
  * @param target
@@ -72,18 +74,24 @@ function recurveMonitorLayer(target: EventTarget | Element | Document, context: 
   captureAdapter.monitor(target, context);
   //@ts-ignore
   target?.querySelectorAll('iframe').forEach((item: Element, index) => {
-    //@ts-ignore
-    if (item && item.contentWindow) {
+    try {
       //@ts-ignore
-      const doc: Document = item.contentWindow.document;
-      let iframeSrc = item.getAttribute('src');
+      if (item && item.contentWindow && item.contentWindow.document) {
+        //@ts-ignore
+        const doc: Document = item.contentWindow.document;
+        let iframeSrc = item.getAttribute('src');
 
-      // iframe 连src都没有肯定是空的，不需要往下执行
-      if (!iframeSrc) return;
-      let iframeSrcArray = iframeSrc.split('?')
-      let iframePath = `iframe[src*="${iframeSrcArray[0]}"] `;
-      recurveMonitorLayer(doc, [...context, iframePath]);
+        // iframe 连src都没有肯定是空的，不需要往下执行
+        if (!iframeSrc) return;
+        let iframeSrcArray = iframeSrc.split('?')
+        let iframePath = `iframe[src*="${iframeSrcArray[0]}"] `;
+        recurveMonitorLayer(doc, [...context, iframePath]);
+      }
+    }catch (_){ // 存在跨域情况则无法注入监听器
+
     }
+
+
   });
 }
 
@@ -110,15 +118,22 @@ async function handleLoadTreeMenuData() {
 
 function handleClose() {
   globalProperties.handleDestroy();
+  // captureAdapter.clearMonitor();
+  console.log(captureAdapter.events);
 }
 
 handleLoadTreeMenuData();
 </script>
+
 <style scoped lang='scss'>
 .description {
   width: 100%;
   font-size: 12px;
   color: #5e6d82;
   line-height: 24px;
+}
+:deep(div){
+  width: auto;
+  margin: 0;
 }
 </style>

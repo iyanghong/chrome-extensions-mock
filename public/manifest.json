@@ -15,11 +15,13 @@
     "declarativeContent",
     "activeTab",
     "storage",
-    "notifications"
+    "notifications",
+    "cookies",
+    "clipboardRead"
   ],
   "host_permissions": [
-    "http://*/*",
-    "https://*/*"
+    "https://*/*",
+    "http://*/*"
   ],
   "content_scripts": [
     {

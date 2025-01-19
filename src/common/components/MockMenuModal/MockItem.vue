@@ -68,6 +68,10 @@ function handleFixClick(item) {
 
 
 <style scoped lang='scss'>
+:deep(div){
+  width: auto;
+  margin: 0;
+}
 :deep(.chrome-extensions-mock-menu-item .n-card__content){
   padding: 10px;
 }

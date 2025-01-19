@@ -17,7 +17,7 @@ function recursiveTreeData(list: MenuEntity[], parentId: string = '-1'): MenuTre
 
 export default class MockMenuStore implements IStore<MenuEntity, MenuTreeEntity> {
   data: MenuEntity[] = [];
-
+  isInitialized: boolean = false;
   constructor() {
     this.refresh().then();
   }
@@ -28,9 +28,11 @@ export default class MockMenuStore implements IStore<MenuEntity, MenuTreeEntity>
 
   async refresh() {
     this.data = await getStorage<MenuEntity[]>(MOCK_MENU_CACHE_KEY, getDefaultMenu());
+    this.isInitialized = true
   }
 
-  getAll() {
+  async getAll() {
+    if(!this.isInitialized) await this.refresh();
     return this.data;
   }
 

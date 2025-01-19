@@ -32,7 +32,7 @@ const DefaultMockList: MockListType = {
   email: createMockItem('email', '邮箱', web.email),
   uuid: createMockItem('uuid', 'UUID', util.uuid),
   idioms: createMockItem('idioms', '成语(指定数量)', base.idioms, ['num = 1', 'separator = \'\'']),
-  idiomsPlus: createMockItem('idiomsPlus', '成语(随机区间数量)', base.idioms, ['minNum = 1', 'maxNum = 10', 'separator = \'\'']),
+  idiomsPlus: createMockItem('idiomsPlus', '成语(随机区间数量)', base.idiomsPlus, ['minNum = 1', 'maxNum = 10', 'separator = \'\'']),
   fullAddress: createMockItem('fullAddress', '详细地址', function() {
     let region = new Region();
     return region.province() + region.prefecture(true) + region.county();
@@ -131,12 +131,21 @@ export default class MockHandler {
     //获取一个个@xx(xx)格式的
     let strMatcher = str.match(/\@(.*?)\((.*?)\)/g);
     if (strMatcher) {
+      
       strMatcher.forEach((m: string) => {
         let match = /\@(.*?)\((.*?)\)/g.exec(m);
+       
         if (match) {
           let params: any[] = [];
           if (match[2]) {
-            params = match[2].split(',');
+            const args = match[2].split(/,(?=(?:[^']*['"]*[^']*['"]*)*[^']*$)/);
+            params = args.map(arg => {
+              if (arg.startsWith("'") && arg.endsWith("'")) {
+                return arg.substring(1, arg.length - 1);
+              } else {
+                return parseInt(arg);
+              }
+            });
           }
           let mockItem: MockItemType = this.get(match[1]);
           if (mockItem) {
